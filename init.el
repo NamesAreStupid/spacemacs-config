@@ -328,6 +328,16 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+
+
+  ;; Windows specific settings
+  (when (eq system-type 'windows-nt)
+    (setq dotspacemacs-default-font
+          '("Consolas"
+            :size 13
+            :weight normal
+            :width normal
+            :powerline-scale 1.1)))
   )
 
 (defun dotspacemacs/user-config ()
@@ -342,6 +352,9 @@ you should place your code here."
   ;; My custom keybindings
   (global-set-key (kbd "M-<up>") 'move-text-up)
   (global-set-key (kbd "M-<down>") 'move-text-down)
+
+  ;; Disable mouse-wheel-progressive-speed
+  (setq mouse-wheel-progressive-speed nil)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
