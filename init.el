@@ -43,7 +43,6 @@ This function should only modify configuration layer settings."
               clojure-enable-clj-refactor t
               clojure-enable-sayid t)
      clojure-lint
-     emacs-lisp
      (git :variables
           git-magit-status-fullscreen t
           git-enable-github-support t
