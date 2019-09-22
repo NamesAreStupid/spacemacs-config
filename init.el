@@ -59,6 +59,7 @@ This function should only modify configuration layer settings."
      syntax-checking
      ;; version-control
      (version-control :variables
+                      version-control-diff-side 'left
                       version-control-diff-tool 'diff-hl
                       version-control-global-margin t)
      racket
