@@ -488,7 +488,13 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
             :size 13
             :weight normal
             :width normal
-            :powerline-scale 1.1)))
+            :powerline-scale 1.1))
+
+    ;; eDiff requires a diffing program and tries to find the Unix diff.
+    ;; On Windows point to gits diff.exe and diff3.exe
+    ;; Alternatively add git/usr/bin to the System PATH Variable
+    (setq ediff-diff-program "C:/Program Files/Git/usr/bin/diff.exe")
+    (setq ediff-diff3-program "C:/Program Files/Git/usr/bin/diff3.exe"))
   )
 
 (defun dotspacemacs/user-load ()
