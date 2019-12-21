@@ -520,6 +520,10 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  ;; Toggle treemacs on startup
+  ;; (there is a small delay probably because of the emacs startup process)
+  (treemacs)
+
   (defun slime-enable-smartparens ()
     (smartparens-strict-mode t)
     (turn-on-smartparens-mode))
