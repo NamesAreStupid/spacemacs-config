@@ -489,6 +489,9 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
+  ;; Disable mouse-wheel-progressive-speed
+  (setq mouse-wheel-progressive-speed nil)
+
   ;; Windows specific settings
   (when (eq system-type 'windows-nt)
     (setq dotspacemacs-default-font
@@ -550,9 +553,6 @@ before packages are loaded."
   ;; (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-return)
   (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-return)
   (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-newline-and-indent)
-
-  ;; Disable mouse-wheel-progressive-speed
-  (setq mouse-wheel-progressive-speed nil)
 
   )
 
