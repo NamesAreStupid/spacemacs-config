@@ -44,15 +44,19 @@ This function should only modify configuration layer settings."
               clojure-enable-sayid t)
      clojure-lint
      common-lisp
+     docker
      (git :variables
           git-magit-status-fullscreen t
           git-enable-github-support t
           git-gutter-use-fringe t)
-     (javascript :variables javascript-import-tool 'import-js)
+     (javascript :variables
+                 javascript-import-tool 'import-js
+                 javascript-repl `nodejs)
+     html
      markdown
      ;; neotree
      org
-     python
+     (python :variables python-backend 'anaconda)
      ipython-notebook
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -510,6 +514,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
     (setq ediff-diff-program "C:/Program Files/Git/usr/bin/diff.exe")
     (setq ediff-diff3-program "C:/Program Files/Git/usr/bin/diff3.exe")
     )
+
   )
 
 (defun dotspacemacs/user-load ()
@@ -557,6 +562,14 @@ before packages are loaded."
   (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-return)
   (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-newline-and-indent)
 
+  ;; Windows specifig user-config settigs
+  (when (eq system-type 'windows-nt)
+
+    ;; Javascript layer: Set nodejs path for tern to work on windows
+    ;; (setq tern-command '("node" "~/npm/node_modules/tern/bin/tern"))
+    (setq tern-command '("node" "tern"))
+    )
+
   )
 
   ;; Do not write anything past this comment. This is where Emacs will
@@ -573,7 +586,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (nodejs-repl livid-mode json-navigator hierarchy json-mode json-snatcher json-reformat js2-refactor js-doc dap-mode bui company-tern tern slime-company slime common-lisp-snippets lsp-haskell lsp-mode dash-functional intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell dante lcr company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode attrap lsp-ui lsp-treemacs helm-lsp company-lsp sayid parinfer helm-gtags ggtags flycheck-clojure flycheck-clj-kondo counsel-gtags counsel swiper ivy company clojure-snippets clj-refactor inflections edn multiple-cursors yasnippet peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen treemacs-projectile treemacs-evil treemacs ht pfuture toc-org symon symbol-overlay string-inflection spaceline-all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump doom-modeline shrink-path all-the-icons memoize f dash s devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra lv font-lock+ evil goto-chg undo-tree dotenv-mode diminish bind-map bind-key async))))
+    (dockerfile-mode docker tablist docker-tramp utop tuareg caml ocp-indent flycheck-ocaml merlin dune nodejs-repl livid-mode json-navigator hierarchy json-mode json-snatcher json-reformat js2-refactor js-doc dap-mode bui company-tern tern slime-company slime common-lisp-snippets lsp-haskell lsp-mode dash-functional intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell dante lcr company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode attrap lsp-ui lsp-treemacs helm-lsp company-lsp sayid parinfer helm-gtags ggtags flycheck-clojure flycheck-clj-kondo counsel-gtags counsel swiper ivy company clojure-snippets clj-refactor inflections edn multiple-cursors yasnippet peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen treemacs-projectile treemacs-evil treemacs ht pfuture toc-org symon symbol-overlay string-inflection spaceline-all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump doom-modeline shrink-path all-the-icons memoize f dash s devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra lv font-lock+ evil goto-chg undo-tree dotenv-mode diminish bind-map bind-key async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
