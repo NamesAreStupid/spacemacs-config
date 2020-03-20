@@ -556,11 +556,16 @@ before packages are loaded."
   (global-set-key (kbd "M-<up>") 'move-text-up)
   (global-set-key (kbd "M-<down>") 'move-text-down)
 
-  ;; Cider Keybindings
-  ;; (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-newline-and-indent)
-  ;; (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-return)
-  (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-return)
-  (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-newline-and-indent)
+  (add-hook 'cider-repl-mode-hook
+            (lambda ()
+              ;; (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-newline-and-indent)
+              ;; (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-return)
+              (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-return)
+              (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-newline-and-indent)))
+
+  (add-hook 'racket-repl-mode-hook
+            (lambda ()
+              (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)))
 
   ;; Windows specifig user-config settigs
   (when (eq system-type 'windows-nt)
