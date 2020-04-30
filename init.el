@@ -535,6 +535,16 @@ before packages are loaded."
   ;; (there is a small delay probably because of the emacs startup process)
   (treemacs)
 
+  ;; Stop using the minibuffer when mouse leaves it.
+  ;; If the mousecursor is put somewhere else, while the minibuffer is still active,
+  ;; it messes with the evil-mode controls (eg. the d key will no always delete the line...).
+  ;; sulution found at: http://trey-jackson.blogspot.com/2010/04/emacs-tip-36-abort-minibuffer-when.html
+  (defun stop-using-minibuffer ()
+    "kill the minibuffer"
+    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
+      (abort-recursive-edit)))
+  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
+
   (defun slime-enable-smartparens ()
     (smartparens-strict-mode t)
     (turn-on-smartparens-mode))
@@ -565,6 +575,7 @@ before packages are loaded."
 
   (add-hook 'racket-repl-mode-hook
             (lambda ()
+              (company-mode)
               (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)))
 
   ;; Windows specifig user-config settigs
