@@ -586,6 +586,10 @@ before packages are loaded."
   (when (eq system-type 'windows-nt)
 
     ;; helm-make needs to point to mingw32-make on windows
+    ;; A .bat file could be used to forward the call with arguments (make.bat < mingw32-make %*)
+    ;; that bat file, however, may break things (like ruby? not tried, just read it on SO).
+    ;; Cygwin has integration with the windows cmd and tools like gcc and make are available.
+    ;; With cygwin they could be used from the windows CMD natively like on Unix.
     (setq helm-make-executable "mingw32-make")
 
     ;; Javascript layer: Set nodejs path for tern to work on windows
