@@ -41,7 +41,7 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-sort-by-usage t)
      (c-c++ :variables
             c-c++-adopt-subprojects t
-            c-c++-backend 'lsp-ccls
+            ;; c-c++-backend 'lsp-ccls
             c-c++-lsp-enable-semantic-highlight 'rainbow)
      (clojure :variables
               clojure-enable-clj-refactor t
@@ -50,7 +50,7 @@ This function should only modify configuration layer settings."
      common-lisp
      docker
      (git :variables
-          git-magit-status-fullscreen t
+          git-magit-status-fullscreen nil ;; t
           git-enable-github-support t
           git-gutter-use-fringe t)
      (javascript :variables
@@ -590,7 +590,8 @@ before packages are loaded."
     ;; that bat file, however, may break things (like ruby? not tried, just read it on SO).
     ;; Cygwin has integration with the windows cmd and tools like gcc and make are available.
     ;; With cygwin they could be used from the windows CMD natively like on Unix.
-    (setq helm-make-executable "mingw32-make")
+    ;; (setq helm-make-executable "mingw32-make")
+    ;; Scratch that... just install everything with chocolatey!
 
     ;; Javascript layer: Set nodejs path for tern to work on windows
     ;; (setq tern-command '("node" "~/npm/node_modules/tern/bin/tern"))
