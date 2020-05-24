@@ -111,7 +111,7 @@ This function should only modify configuration layer settings."
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages
    '(
-     (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
+     ;; (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
      )
 
    ;; A list of packages that cannot be updated.
@@ -563,9 +563,9 @@ before packages are loaded."
   (add-hook 'slime-repl-mode-hook #'slime-enable-rainbow-init)
 
   ;; Haskell hie config
-  (setq lsp-haskell-process-path-hie "hie-wrapper")
-  (require 'lsp-haskell)
-  (add-hook 'haskell-mode-hook #'lsp)
+  ;; (setq lsp-haskell-process-path-hie "hie-wrapper")
+  ;; (require 'lsp-haskell)
+  ;; (add-hook 'haskell-mode-hook #'lsp)
 
   ;; My custom keybindings
   (global-set-key (kbd "M-<up>") 'move-text-up)
@@ -585,14 +585,6 @@ before packages are loaded."
 
   ;; Windows specifig user-config settigs
   (when (eq system-type 'windows-nt)
-
-    ;; helm-make needs to point to mingw32-make on windows
-    ;; A .bat file could be used to forward the call with arguments (make.bat < mingw32-make %*)
-    ;; that bat file, however, may break things (like ruby? not tried, just read it on SO).
-    ;; Cygwin has integration with the windows cmd and tools like gcc and make are available.
-    ;; With cygwin they could be used from the windows CMD natively like on Unix.
-    ;; (setq helm-make-executable "mingw32-make")
-    ;; Scratch that... just install everything with chocolatey!
 
     ;; Javascript layer: Set nodejs path for tern to work on windows
     ;; (setq tern-command '("node" "~/npm/node_modules/tern/bin/tern"))
