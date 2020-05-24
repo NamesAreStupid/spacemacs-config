@@ -48,6 +48,7 @@ This function should only modify configuration layer settings."
               clojure-enable-sayid t)
      clojure-lint
      common-lisp
+     dap
      docker
      (git :variables
           git-magit-status-fullscreen nil ;; t
@@ -76,9 +77,9 @@ This function should only modify configuration layer settings."
                       version-control-global-margin t)
      racket
      lsp
-     (haskell :variables
-              haskell-complpetion-backend 'lsp)
-              ;; haskell-process-type 'stack-ghci)
+     ;; (haskell :variables
+     ;;          haskell-complpetion-backend 'lsp)
+     ;;          ;; haskell-process-type 'stack-ghci)
      ;; ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
