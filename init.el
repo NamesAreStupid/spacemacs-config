@@ -542,10 +542,6 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
-  ;; Toggle treemacs on startup
-  ;; (there is a small delay probably because of the emacs startup process)
-  (treemacs)
-
   ;; Stop using the minibuffer when mouse leaves it.
   ;; If the mousecursor is put somewhere else, while the minibuffer is still active,
   ;; it messes with the evil-mode controls (eg. the d key will no always delete the line...).
@@ -597,6 +593,10 @@ before packages are loaded."
     (setq tern-command '("node" "tern"))
     )
 
+
+  ;; Toggle treemacs on startup
+  ;; (there is a small delay probably because of the emacs startup process)
+  (treemacs)
   )
 
   ;; Do not write anything past this comment. This is where Emacs will
