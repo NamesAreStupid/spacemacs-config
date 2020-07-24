@@ -119,7 +119,6 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages
    '(
      ;; (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
-     company-distel
      )
 
    ;; A list of packages that cannot be updated.
@@ -586,55 +585,6 @@ before packages are loaded."
             (lambda ()
               (company-mode)
               (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)))
-
-  ;; Distel Setup on Winddows
-  ;; This is needed for Erlang mode setup
-  (setq erlang-root-dir "C:/erl-23.0")
-  (add-to-list 'load-path "C:/erl-23.0/lib/tools-3.4/emacs")
-  (add-to-list 'exec-path "C:/erl-23.0/bin")
-  (require 'erlang-start)
-
-  ;; Enable distel for erlang
-  (add-to-list 'load-path "C:/distel/elisp/")
-  (require 'distel)
-  (distel-setup)
-
-  ;; ;; default node name to emacs@localhost
-  ;; (setq inferior-erlang-machine-options '("-sname" "emacs"))
-
-  ;; ;; prevent annoying hang-on-compile
-  ;; (defvar inferior-erlang-prompt-timeout t)
-  ;; ;; default node name to emacs@localhost
-  ;; (setq inferior-erlang-machine-options '("-sname" "emacs"))
-  ;; ;; tell distel to default to that node
-  ;; (setq erl-nodename-cache
-  ;;       (make-symbol
-  ;;        (concat
-  ;;         "emacs@"
-  ;;         ;; Mac OS X uses "name.local" instead of "name", this should work
-  ;;         ;; pretty much anywhere without having to muck with NetInfo
-  ;;         ;; ... but I only tested it on Mac OS X.
-  ;;         (car (split-string (shell-command-to-string "hostname"))))))
-
-  (require 'company-distel)
-  ;;(add-to-list 'company-backends 'company-distel)
-  (with-eval-after-load 'company
-    (add-to-list 'company-backends 'company-distel))
-
-  ;; Enable company-distel in erlang-mode
-  (add-hook 'erlang-mode-hook
-            (lambda ()
-              ;; when starting an Erlang shell in Emacs, default in the node name
-              (setq inferior-erlang-machine-options '("-sname" "emacs"))
-              (setq erl-nodename-cache
-                    (make-symbol
-                     (concat
-                      "emacs@"
-                      (car (split-string (shell-command-to-string "hostname"))))))
-            (setq company-backends '(company-distel))))
-
-  ;; Enable company-mode for erlang-shell-mode
-  (add-hook 'erlang-shell-mode 'company-mode)
 
   ;; Windows specifig user-config settigs
   (when (eq system-type 'windows-nt)
