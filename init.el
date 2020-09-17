@@ -83,7 +83,9 @@ This function should only modify configuration layer settings."
                       version-control-diff-tool 'diff-hl
                       version-control-global-margin t)
      racket
-     lsp
+     (lsp :variables
+          lsp-ui-doc-position 'top)
+     ;; lsp
      ;; (haskell :variables
      ;;          haskell-complpetion-backend 'lsp)
      ;;          ;; haskell-process-type 'stack-ghci)
@@ -119,6 +121,8 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages
    '(
      ;; (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
+     ivy-erlang-complete
+     company-erlang
      )
 
    ;; A list of packages that cannot be updated.
@@ -526,7 +530,6 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
     (setq ediff-diff-program "C:/Program Files/Git/usr/bin/diff.exe")
     (setq ediff-diff3-program "C:/Program Files/Git/usr/bin/diff3.exe")
     )
-
   )
 
 (defun dotspacemacs/user-load ()
@@ -586,6 +589,24 @@ before packages are loaded."
               (company-mode)
               (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)))
 
+  ;; Erlang settings
+  ;; (when (eq system-type 'windows-nt)
+  ;;   (add-to-list 'load-path "C:/erl-23.0/lib/tools-3.4/emacs")
+  ;;   (setq erlang-root-dir "C:/erl-23.0")
+  ;;   (add-to-list 'exec-path "C:/erl-23.0/bin")
+  ;;   (add-hook 'erlang-mode-hook
+  ;;             (lambda ()
+  ;;               (setq inferior-erlang-machine-options '("-sname" "emacs"))))
+  ;;   (require 'erlang-start)
+  ;;   (require 'ivy-erlang-complete)
+  ;;   (add-hook 'erlang-mode-hook #'ivy-erlang-complete-init)
+  ;;   ;; ;; automatic update completion data after save
+  ;;   ;; (add-hook 'after-save-hook #'ivy-erlang-complete-reparse)
+  ;;   (add-hook 'erlang-mode-hook #'company-erlang-init)
+  ;;   (add-hook 'erlang-mode-hook
+  ;;             (lambda ()
+  ;;               (setq ivy-erlang-complete-erlang-root "C:/erl-23.0"))))
+
   ;; Windows specifig user-config settigs
   (when (eq system-type 'windows-nt)
 
@@ -614,7 +635,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (company-distel distel-completion-lib erlang godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc company-go go-mode helm-rtags google-c-style flycheck-ycmd flycheck-rtags disaster cquery cpp-auto-include company-ycmd ycmd company-rtags rtags company-c-headers clang-format ccls dockerfile-mode docker tablist docker-tramp utop tuareg caml ocp-indent flycheck-ocaml merlin dune nodejs-repl livid-mode json-navigator hierarchy json-mode json-snatcher json-reformat js2-refactor js-doc dap-mode bui company-tern tern slime-company slime common-lisp-snippets lsp-haskell lsp-mode dash-functional intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell dante lcr company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode attrap lsp-ui lsp-treemacs helm-lsp company-lsp sayid parinfer helm-gtags ggtags flycheck-clojure flycheck-clj-kondo counsel-gtags counsel swiper ivy company clojure-snippets clj-refactor inflections edn multiple-cursors yasnippet peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen treemacs-projectile treemacs-evil treemacs ht pfuture toc-org symon symbol-overlay string-inflection spaceline-all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump doom-modeline shrink-path all-the-icons memoize f dash s devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra lv font-lock+ evil goto-chg undo-tree dotenv-mode diminish bind-map bind-key async))))
+    (treemacs-icons-dired company-erlang ivy-erlang-complete company-distel distel-completion-lib erlang godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc company-go go-mode helm-rtags google-c-style flycheck-ycmd flycheck-rtags disaster cquery cpp-auto-include company-ycmd ycmd company-rtags rtags company-c-headers clang-format ccls dockerfile-mode docker tablist docker-tramp utop tuareg caml ocp-indent flycheck-ocaml merlin dune nodejs-repl livid-mode json-navigator hierarchy json-mode json-snatcher json-reformat js2-refactor js-doc dap-mode bui company-tern tern slime-company slime common-lisp-snippets lsp-haskell lsp-mode dash-functional intero hlint-refactor hindent helm-hoogle haskell-snippets flycheck-haskell dante lcr company-ghci company-ghc ghc haskell-mode company-cabal cmm-mode attrap lsp-ui lsp-treemacs helm-lsp company-lsp sayid parinfer helm-gtags ggtags flycheck-clojure flycheck-clj-kondo counsel-gtags counsel swiper ivy company clojure-snippets clj-refactor inflections edn multiple-cursors yasnippet peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen treemacs-projectile treemacs-evil treemacs ht pfuture toc-org symon symbol-overlay string-inflection spaceline-all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck pkg-info epl flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump doom-modeline shrink-path all-the-icons memoize f dash s devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra lv font-lock+ evil goto-chg undo-tree dotenv-mode diminish bind-map bind-key async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -622,3 +643,16 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  )
 )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(treemacs evil-unimpaired sql-indent evil-visualstar evil-visual-mark-mode evil-tutor evil-surround evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state iedit evil-exchange evil-ediff evil-args evil-anzu anzu evil undo-tree clj-refactor inflections spinner queue adaptive-wrap spaceline magit-gitflow livid-mode js2-refactor hy-mode git-gutter-fringe flx-ido evil-search-highlight-persist company-quickhelp company-erlang ivy-erlang-complete counsel yapfify yaml-mode ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toc-org tern tagedit powerline smeargle smartparens slime-company slime slim-mode skewer-mode scss-mode sass-mode restart-emacs rainbow-delimiters racket-mode pyvenv pytest pyenv-mode py-isort pug-mode popwin pip-requirements persp-mode pcre2el paradox orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree move-text mmm-mode markdown-toc markdown-mode magit-popup magit macrostep lorem-ipsum simple-httpd live-py-mode linum-relative link-hint multiple-cursors js2-mode js-doc swiper indent-guide hydra dash-functional hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc helm-projectile projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip flycheck flx fill-column-indicator fancy-battery eyebrowse expand-region highlight evil-numbers evil-nerd-commenter git-commit evil-escape goto-chg erlang emmet-mode elisp-slime-nav ein with-editor exec-path-from-shell polymode deferred request anaphora websocket dumb-jump dockerfile-mode docker transient tablist json-mode docker-tramp json-snatcher json-reformat disaster diminish diff-hl define-word cython-mode company-web web-completion-data company-statistics pos-tip company-go go-mode ivy company-c-headers company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode cmake-mode clojure-snippets paredit lv clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu cider sesman pkg-info parseedn clojure-mode parseclj a epl bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
