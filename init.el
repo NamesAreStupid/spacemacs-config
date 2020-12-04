@@ -57,6 +57,7 @@ This function should only modify configuration layer settings."
           git-gutter-use-fringe t)
      (go :variables
          go-backend 'go-mode
+         ;; go-backend 'lsp
          go-format-before-save t
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4)
@@ -650,6 +651,7 @@ before packages are loaded."
 
   ;; Toggle treemacs on startup
   ;; (there is a small delay probably because of the emacs startup process)
+  ;; (treemacs-set-width 25)
   ;; (treemacs)
   )
 
