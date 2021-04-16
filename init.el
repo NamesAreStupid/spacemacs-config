@@ -32,7 +32,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(html
+   '(windows-scripts
+     html
      (sql :variables sql-auto-indent nil)
      yaml
      (auto-completion :variables
@@ -45,7 +46,8 @@ This function should only modify configuration layer settings."
             c-c++-lsp-enable-semantic-highlight 'rainbow)
      (clojure :variables
               clojure-enable-clj-refactor t
-              clojure-enable-sayid t)
+              clojure-enable-sayid t
+              clojure-backend 'cider)
      clojure-lint
      common-lisp
      dap
@@ -56,7 +58,7 @@ This function should only modify configuration layer settings."
           git-enable-github-support t
           git-gutter-use-fringe t)
      (go :variables
-         go-backend 'go-mode
+         go-backend 'go-mode ;; deprecated and won't be patched (sadface)
          ;; go-backend 'lsp
          go-format-before-save t
          godoc-at-point-function 'godoc-gogetdoc
@@ -68,6 +70,7 @@ This function should only modify configuration layer settings."
      markdown
      ;; neotree
      org
+     prolog
      (python :variables python-backend 'anaconda)
      ipython-notebook
      ;; (shell :variables
@@ -557,6 +560,11 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
+  ;; If this is set to 't' dired will use the ls proovided by the system.
+  ;; This was necessary because it wouldnt't shut up about some issues (???)
+  ;; I guess now a ls command has to be provided on windows eg. through mingw.
+  (setq ls-lisp-use-insert-directory-program t)
+
   ;; Disable mouse-wheel-progressive-speed
   (setq mouse-wheel-progressive-speed nil)
 
@@ -669,3 +677,22 @@ before packages are loaded."
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(xterm-color terminal-here shell-pop multi-term eshell-z eshell-prompt-extras esh-help powershell helm-gtags ggtags counsel-gtags counsel swiper ivy gnu-elpa-keyring-update yasnippet-snippets yapfify yaml-mode ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toc-org tagedit symon symbol-overlay string-inflection sql-indent sphinx-doc spaceline-all-the-icons smeargle slime-company slim-mode scss-mode sayid sass-mode restart-emacs rainbow-delimiters racket-mode pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements pcre2el password-generator paradox overseer orgit org-superstar org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-cliplink org-brain open-junk-file nodejs-repl nameless move-text mmm-mode markdown-toc magit-svn magit-section magit-gitflow lsp-ui lsp-python-ms lsp-pyright lsp-origami lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc indent-guide importmagic impatient-mode hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-gitignore helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-cider helm-c-yasnippet helm-ag google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy font-lock+ flycheck-ycmd flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-cleverparens evil-args evil-anzu erlang emr emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode dockerfile-mode docker disaster dired-quick-sort diminish diff-hl devdocs define-word dap-mode cython-mode cpp-auto-include company-ycmd company-web company-statistics company-rtags company-quickhelp company-go company-c-headers company-anaconda common-lisp-snippets column-enforce-mode clojure-snippets clj-refactor clean-aindent-mode cider-eval-sexp-fu centered-cursor-mode ccls browse-at-remote blacken auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)
