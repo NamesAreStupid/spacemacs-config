@@ -560,14 +560,6 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
-  ;; If this is set to 't' dired will use the ls proovided by the system.
-  ;; This was necessary because it wouldnt't shut up about some issues (???)
-  ;; I guess now a ls command has to be provided on windows eg. through mingw.
-  (setq ls-lisp-use-insert-directory-program t)
-
-  ;; Disable mouse-wheel-progressive-speed
-  (setq mouse-wheel-progressive-speed nil)
-
   ;; Windows specific settings
   (when (eq system-type 'windows-nt)
     (setq dotspacemacs-default-font
@@ -580,8 +572,9 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
     ;; eDiff requires a diffing program and tries to find the Unix diff.
     ;; On Windows point to gits diff.exe and diff3.exe
     ;; Alternatively add git/usr/bin to the System PATH Variable
-    (setq ediff-diff-program "C:/Program Files/Git/usr/bin/diff.exe")
-    (setq ediff-diff3-program "C:/Program Files/Git/usr/bin/diff3.exe")
+    ;; NOTE: added these from msys2 to the path. This is no longer necessary.
+    ;; (setq ediff-diff-program "C:/Program Files/Git/usr/bin/diff.exe")
+    ;; (setq ediff-diff3-program "C:/Program Files/Git/usr/bin/diff3.exe")
     )
   )
 
@@ -607,6 +600,14 @@ before packages are loaded."
   ;; in the file .emacs.d/layers/+spacemacs/spacemacs-defaults/funcs.el
   ;; This removes the functionality
   (advice-remove 'mwheel-scroll #'spacemacs//scroll-bar-show-delayed-hide)
+
+  ;; If this is set to 't' dired will use the ls proovided by the system.
+  ;; This was necessary because it wouldnt't shut up about some issues (???)
+  ;; I guess now a ls command has to be provided on windows eg. through mingw.
+  (setq ls-lisp-use-insert-directory-program t)
+
+  ;; Disable mouse-wheel-progressive-speed
+  (setq mouse-wheel-progressive-speed nil)
 
   ;; Stop using the minibuffer when mouse leaves it.
   ;; If the mousecursor is put somewhere else, while the minibuffer is still active,
