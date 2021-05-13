@@ -63,6 +63,9 @@ This function should only modify configuration layer settings."
          go-format-before-save t
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4)
+     (haskell :variables
+              haskell-completion-backend 'dante
+              haskell-enable-hindent t) 
      (javascript :variables
                  javascript-import-tool 'import-js
                  javascript-repl `nodejs)
@@ -600,6 +603,13 @@ before packages are loaded."
   ;; in the file .emacs.d/layers/+spacemacs/spacemacs-defaults/funcs.el
   ;; This removes the functionality
   (advice-remove 'mwheel-scroll #'spacemacs//scroll-bar-show-delayed-hide)
+
+  ;; disable smooth scrolling
+  ;; TODO: does this work in user-config or do I have to put it eg. in user-init?
+  dotspacemacs-smooth-scrolling nil
+
+  ;; change mouse-wheel-scroll-amount
+  (setq mouse-wheel-scroll-amount '(3))
 
   ;; If this is set to 't' dired will use the ls proovided by the system.
   ;; This was necessary because it wouldnt't shut up about some issues (???)
