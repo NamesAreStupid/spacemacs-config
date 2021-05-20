@@ -662,6 +662,10 @@ before packages are loaded."
               (company-mode)
               (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)))
 
+  (add-hook 'inferior-emacs-lisp-mode
+            (lambda ()
+              (define-key inferior-emacs-lisp-mode-map (kbd "C-<return>") 'newline-and-indent)))
+
   ;; Erlang settings
   ;; (when (eq system-type 'windows-nt)
   ;;   (add-to-list 'load-path "C:/erl-23.0/lib/tools-3.4/emacs")
