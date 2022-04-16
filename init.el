@@ -59,14 +59,15 @@ This function should only modify configuration layer settings."
           git-enable-github-support t
           git-gutter-use-fringe t)
      (go :variables
-         go-backend 'go-mode ;; deprecated and won't be patched (sadface)
-         ;; go-backend 'lsp
+         ;; go-backend 'go-mode ;; deprecated and won't be patched (sadface)
+         go-backend 'lsp
          go-format-before-save t
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4)
      (haskell :variables
               haskell-completion-backend 'dante
-              haskell-enable-hindent t) 
+              haskell-enable-hindent t
+              haskell-process-type 'stack-ghci)
      (javascript :variables
                  javascript-import-tool 'import-js
                  javascript-repl `nodejs)
@@ -93,7 +94,7 @@ This function should only modify configuration layer settings."
      racket
      (lsp :variables
           lsp-ui-doc-position 'top)
-     ;; themes-megapack
+     themes-megapack
      ;; lsp
      ;; (haskell :variables
      ;;          haskell-complpetion-backend 'lsp)
