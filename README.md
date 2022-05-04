@@ -2,12 +2,19 @@
 
 Create a ~/.spacemacs.d folder and put the file in there.
 
-## Windows instructions:
+## Clone instructions:
 
 To clone this spacemacs config to the appropriate location execute the following:
+
+### Windows
 ```
 cd %userprofile%/AppData/Roaming
 git clone https://github.com/NamesAreStupid/spacemacs-config.git .spacemacs.d
+
+```
+### Linux
+```
+git clone https://github.com/NamesAreStupid/spacemacs-config.git ~/.spacemacs.d
 
 ```
 
