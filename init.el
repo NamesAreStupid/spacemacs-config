@@ -44,6 +44,7 @@ This function should only modify configuration layer settings."
      (c-c++ :variables
             c-c++-adopt-subprojects t
             ;; c-c++-backend 'lsp-ccls
+            c-c++-dap-adapters '(dap-cpptools dap-gdb-lldb dap-lldb)
             c-c++-lsp-enable-semantic-highlight 'rainbow)
      (clojure :variables
               clojure-enable-clj-refactor t
@@ -65,7 +66,7 @@ This function should only modify configuration layer settings."
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4)
      (haskell :variables
-              haskell-completion-backend 'dante
+              ;; haskell-completion-backend 'dante
               haskell-enable-hindent t
               haskell-process-type 'stack-ghci)
      (javascript :variables
@@ -86,6 +87,7 @@ This function should only modify configuration layer settings."
      syntax-checking
      (treemacs :variables
                treemacs-use-follow-mode t)
+     (typescript)
      ;; version-control
      (version-control :variables
                       version-control-diff-side 'left
@@ -646,11 +648,11 @@ before packages are loaded."
 
   ;; Some idiot added "auto hiding scrollbars" in the sapcemacs default
   ;; and makes you jump through hoops to disable it.
-  ;; With this enabled scrollbars will always show for a couple of seconds
-  ;; after mouse scroll, even when disabled...
+  ;; With that enabled, scrollbars will always show for a couple of seconds
+  ;; after mouse scroll, even when they are disabled...
   ;; The function at fault is spacemacs//scroll-bar-show-delayed-hide
   ;; in the file .emacs.d/layers/+spacemacs/spacemacs-defaults/funcs.el
-  ;; This removes the functionality
+  ;; This removes it.
   (advice-remove 'mwheel-scroll #'spacemacs//scroll-bar-show-delayed-hide)
 
   ;; disable smooth scrolling
@@ -667,6 +669,22 @@ before packages are loaded."
 
   ;; Disable mouse-wheel-progressive-speed
   (setq mouse-wheel-progressive-speed nil)
+
+  ;; Indentation setup. found at https://stackoverflow.com/questions/36719386/spacemacs-set-tab-width
+  (defun my-setup-indent (n)
+    ;; java/c/c++
+    ;; (setq c-basic-offset n)
+    ;; web development
+    ;; (setq coffee-tab-width n) ; coffeescript
+    ;; (setq javascript-indent-level n) ; javascript-mode
+    (setq js-indent-level n) ; js-mode
+    ;; (setq js2-basic-offset n) ; js2-mode, in latest js2-mode, it's alias of js-indent-level
+    ;; (setq web-mode-markup-indent-offset n) ; web-mode, html tag in html file
+    ;; (setq web-mode-css-indent-offset n) ; web-mode, css in html file
+    ;; (setq web-mode-code-indent-offset n) ; web-mode, js code in html file
+    ;; (setq css-indent-offset n) ; css-mode
+    )
+  (my-setup-indent 2) ;; set indentation level to 2
 
   ;; Stop using the minibuffer when mouse leaves it.
   ;; If the mousecursor is put somewhere else, while the minibuffer is still active,
@@ -693,10 +711,14 @@ before packages are loaded."
             (lambda ()
               (define-key slime-repl-mode-map (kbd "C-<return>") #'slime-repl-newline-and-indent)))
 
-  ;; Haskell hie config
-  ;; (setq lsp-haskell-process-path-hie "hie-wrapper")
-  ;; (require 'lsp-haskell)
-  ;; (add-hook 'haskell-mode-hook #'lsp)
+  ;; Haskell config
+  ;; Somehow the flycheck checkers get changed and the order of the chekcers gets messed up.
+  ;; This ensures that haskell-stack-ghc is at the front of the checkers list and therefore gets prioritised.
+  ;; if haskell completion backend dante is specified in the variables it prepends dante to the checkers.
+  ;; TODO: This is not working autamatically and has to be executed manually...
+  ;; (setq flycheck-checkers (cons 'haskell-stack-ghc flycheck-checkers))
+  ;; (setq sanity-check flycheck-checkers)
+
 
   ;; My custom keybindings
   ;; (global-set-key (kbd "M-<up>") 'move-text-up)
