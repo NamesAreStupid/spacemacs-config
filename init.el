@@ -34,7 +34,6 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '(csv
      windows-scripts
-     html
      (sql :variables sql-auto-indent nil)
      yaml
      (auto-completion :variables
@@ -65,14 +64,30 @@ This function should only modify configuration layer settings."
          go-format-before-save t
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4)
-     (haskell :variables
-              ;; haskell-completion-backend 'dante
-              haskell-enable-hindent t
-              haskell-process-type 'stack-ghci)
-     (javascript :variables
-                 javascript-import-tool 'import-js
-                 javascript-repl `nodejs)
+     ;; (haskell :variables
+     ;;          ;; haskell-completion-backend 'dante
+     ;;          haskell-enable-hindent t
+     ;;          haskell-process-type 'stack-ghci)
+
+     ;;;; Web Stuff begin
      html
+     (javascript :variables
+                 js2-mode-show-strict-warnings nil
+                 javascript-backend 'tern
+                 javascript-fmt-tool 'web-beautify
+                 javascript-fmt-on-save t
+                 javascript-import-tool 'import-js
+                 javascript-repl `nodejs
+                 node-add-modules-path t)
+     tern
+     import-js
+     prettier
+     web-beautify
+     (typescript :variables
+                 typescript-backend 'tide)
+     tide
+     ;;;; end Web Stuff
+
      markdown
      ;; neotree
      org
@@ -87,15 +102,16 @@ This function should only modify configuration layer settings."
      syntax-checking
      (treemacs :variables
                treemacs-use-follow-mode t)
-     (typescript)
      ;; version-control
      (version-control :variables
                       version-control-diff-side 'left
                       version-control-diff-tool 'diff-hl
                       version-control-global-margin t)
      racket
+     rust
      (lsp :variables
-          lsp-ui-doc-position 'top)
+          lsp-ui-doc-position 'top
+          lsp-rust-server 'rust-analyzer) ;; rust
      themes-megapack
      ;; lsp
      ;; (haskell :variables
@@ -663,7 +679,7 @@ before packages are loaded."
   (setq mouse-wheel-scroll-amount '(3))
 
   ;; If this is set to 't' dired will use the ls proovided by the system.
-  ;; This was necessary because it wouldnt't shut up about some issues (???)
+  ;; This was necessary because it would keep complaining about some issues (???)
   ;; I guess now a ls command has to be provided on windows eg. through mingw.
   (setq ls-lisp-use-insert-directory-program t)
 
@@ -686,9 +702,17 @@ before packages are loaded."
     ;; )
   ;; (my-setup-indent 2) ;; set indentation level to 2
 
-  ;; set js-indent-level for javascript and json
-  (setq js-indent-level 2)
-  
+  (defun my-set-indent-levels ()
+    (setq-default js-indent-level 2)
+    (setq-default js2-basic-offset 2)
+    )
+  (my-set-indent-levels)
+
+  ;; Web and javascript/typescript
+  (when (eq system-type 'windows-nt)
+    ;; Windows users may have to set tern path manually for it to work
+    '(tern-command '("node" "tern")))
+
   ;; Stop using the minibuffer when mouse leaves it.
   ;; If the mousecursor is put somewhere else, while the minibuffer is still active,
   ;; it messes with the evil-mode controls (eg. the d key will no always delete the line...).
@@ -763,10 +787,7 @@ before packages are loaded."
 
   ;; Windows specifig user-config settigs
   (when (eq system-type 'windows-nt)
-
-    ;; Javascript layer: Set nodejs path for tern to work on windows
-    ;; (setq tern-command '("node" "~/npm/node_modules/tern/bin/tern"))
-    (setq tern-command '("node" "tern"))
+    nil
     )
 
 
@@ -790,7 +811,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
-   '(csv-mode yapfify yaml-mode ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit sql-indent spaceline powerline smeargle slime-company slime slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racket-mode pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pip-requirements persp-mode pcre2el paradox orgit org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup magit macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint js2-refactor js2-mode js-doc indent-guide dash-functional hungry-delete htmlize hl-todo highlight-parentheses parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter git-commit gh-md fuzzy flycheck-pos-tip flycheck-joker flycheck flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit smartparens evil-indent-plus iedit evil-exchange evil-escape evil-ediff evil-args evil goto-chg erlang emmet-mode elisp-slime-nav with-editor polymode deferred request anaphora websocket dumb-jump dockerfile-mode docker transient tablist json-mode docker-tramp json-snatcher json-reformat disaster diminish diff-hl define-word cython-mode company-web web-completion-data company-statistics company-quickhelp pos-tip company-go go-mode company-c-headers company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode cmake-mode clojure-snippets clj-refactor hydra inflections multiple-cursors paredit lv clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu cider sesman seq spinner queue pkg-info parseedn clojure-mode parseclj a epl bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup))
+   '(cargo counsel-gtags counsel swiper ivy flycheck-rust ggtags helm-gtags racer ron-mode rust-mode toml-mode yapfify yaml-mode ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit sql-indent spaceline powerline smeargle slime-company slime slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racket-mode pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pip-requirements persp-mode pcre2el paradox orgit org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup magit macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint js2-refactor js2-mode js-doc indent-guide dash-functional hungry-delete htmlize hl-todo highlight-parentheses parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter git-commit gh-md fuzzy flycheck-pos-tip flycheck-joker flycheck flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit smartparens evil-indent-plus iedit evil-exchange evil-escape evil-ediff evil-args evil goto-chg erlang emmet-mode elisp-slime-nav with-editor polymode deferred request anaphora websocket dumb-jump dockerfile-mode docker transient tablist json-mode docker-tramp json-snatcher json-reformat disaster diminish diff-hl define-word cython-mode company-web web-completion-data company-statistics company-quickhelp pos-tip company-go go-mode company-c-headers company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode cmake-mode clojure-snippets clj-refactor hydra inflections multiple-cursors paredit lv clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu cider sesman seq spinner queue pkg-info parseedn clojure-mode parseclj a epl bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
