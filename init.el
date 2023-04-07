@@ -64,30 +64,6 @@ This function should only modify configuration layer settings."
          go-format-before-save t
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4)
-     ;; (haskell :variables
-     ;;          ;; haskell-completion-backend 'dante
-     ;;          haskell-enable-hindent t
-     ;;          haskell-process-type 'stack-ghci)
-
-     ;;;; Web Stuff begin
-     html
-     (javascript :variables
-                 js2-mode-show-strict-warnings nil
-                 javascript-backend 'tern
-                 javascript-fmt-tool 'web-beautify
-                 javascript-fmt-on-save t
-                 javascript-import-tool 'import-js
-                 javascript-repl `nodejs
-                 node-add-modules-path t)
-     tern
-     import-js
-     prettier
-     web-beautify
-     (typescript :variables
-                 typescript-backend 'tide)
-     tide
-     ;;;; end Web Stuff
-
      markdown
      ;; neotree
      org
@@ -113,10 +89,26 @@ This function should only modify configuration layer settings."
           lsp-ui-doc-position 'top
           lsp-rust-server 'rust-analyzer) ;; rust
      themes-megapack
-     ;; lsp
-     ;; (haskell :variables
-     ;;          haskell-complpetion-backend 'lsp)
-     ;;          ;; haskell-process-type 'stack-ghci)
+
+     ;;;; Web Stuff begin
+     html
+     (javascript :variables
+                 js2-mode-show-strict-warnings nil
+                 javascript-backend 'tern
+                 javascript-fmt-tool 'web-beautify
+                 javascript-fmt-on-save t
+                 javascript-import-tool 'import-js
+                 javascript-repl `nodejs
+                 node-add-modules-path t)
+     tern
+     import-js
+     prettier
+     web-beautify
+     (typescript :variables
+                 typescript-backend 'tide)
+     tide
+     ;;;; end Web Stuff
+
      ;; ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
