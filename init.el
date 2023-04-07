@@ -48,8 +48,9 @@ This function should only modify configuration layer settings."
      (clojure :variables
               clojure-enable-clj-refactor t
               clojure-enable-sayid t
+              clojure-enable-linters 'joker
               clojure-backend 'cider)
-     clojure-lint
+     ;; clojure-lint
      common-lisp
      dap
      docker
@@ -66,7 +67,7 @@ This function should only modify configuration layer settings."
          go-tab-width 4)
      markdown
      ;; neotree
-     org
+     ;; org
      prolog
      (python :variables python-backend 'anaconda)
      ipython-notebook
@@ -733,11 +734,10 @@ before packages are loaded."
   ;; Haskell config
   ;; Somehow the flycheck checkers get changed and the order of the chekcers gets messed up.
   ;; This ensures that haskell-stack-ghc is at the front of the checkers list and therefore gets prioritised.
-  ;; if haskell completion backend dante is specified in the variables it prepends dante to the checkers.
+  ;; If haskell completion backend dante is specified in the variables, it prepends dante to the checkers.
   ;; TODO: This is not working autamatically and has to be executed manually...
   ;; (setq flycheck-checkers (cons 'haskell-stack-ghc flycheck-checkers))
   ;; (setq sanity-check flycheck-checkers)
-
 
   ;; My custom keybindings
   ;; (global-set-key (kbd "M-<up>") 'move-text-up)
