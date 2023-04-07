@@ -654,14 +654,9 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  ;;;; General Settings
 
-  ;; Some idiot added "auto hiding scrollbars" in the sapcemacs default
-  ;; and makes you jump through hoops to disable it.
-  ;; With that enabled, scrollbars will always show for a couple of seconds
-  ;; after mouse scroll, even when they are disabled...
-  ;; The function at fault is spacemacs//scroll-bar-show-delayed-hide
-  ;; in the file .emacs.d/layers/+spacemacs/spacemacs-defaults/funcs.el
-  ;; This removes it.
+  ;; Disable auto hiding scroll bars, so they never show up.
   (advice-remove 'mwheel-scroll #'spacemacs//scroll-bar-show-delayed-hide)
 
   ;; disable smooth scrolling
@@ -671,13 +666,43 @@ before packages are loaded."
   ;; change mouse-wheel-scroll-amount
   (setq mouse-wheel-scroll-amount '(3))
 
-  ;; If this is set to 't' dired will use the ls proovided by the system.
+  ;; If this is set to 't' dired will use the ls provided by the system.
   ;; This was necessary because it would keep complaining about some issues (???)
   ;; I guess now a ls command has to be provided on windows eg. through mingw.
   (setq ls-lisp-use-insert-directory-program t)
 
   ;; Disable mouse-wheel-progressive-speed
   (setq mouse-wheel-progressive-speed nil)
+
+  ;; Stop using the minibuffer when mouse leaves it.
+  ;; If the mousecursor is put somewhere else, while the minibuffer is still active,
+  ;; it messes with the evil-mode controls (eg. the d key will no always delete the line...).
+  ;; sulution found at: http://trey-jackson.blogspot.com/2010/04/emacs-tip-36-abort-minibuffer-when.html
+  (defun stop-using-minibuffer ()
+    "kill the minibuffer"
+    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
+      (abort-recursive-edit)))
+  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
+
+  ;; Windows specifig user-config settigs
+  (when (eq system-type 'windows-nt)
+    nil
+    )
+
+  ;; Toggle treemacs on startup
+  ;; (there is a small delay probably because of the emacs startup process)
+  ;; (treemacs-set-width 25)
+  ;; (treemacs)
+
+
+  ;;;; Key bindings
+
+  ;; My custom keybindings
+  ;; (global-set-key (kbd "M-<up>") 'move-text-up)
+  ;; (global-set-key (kbd "M-<down>") 'move-text-down)
+
+
+  ;;;; Programming languages
 
   ;; Indentation setup. found at https://stackoverflow.com/questions/36719386/spacemacs-set-tab-width
   ;; (defun my-setup-indent (n)
@@ -701,37 +726,30 @@ before packages are loaded."
     )
   (my-set-indent-levels)
 
-  ;; Web and javascript/typescript
+  ;;;; Web and javascript/typescript
   (when (eq system-type 'windows-nt)
     ;; Windows users may have to set tern path manually for it to work
     '(tern-command '("node" "tern")))
 
-  ;; Stop using the minibuffer when mouse leaves it.
-  ;; If the mousecursor is put somewhere else, while the minibuffer is still active,
-  ;; it messes with the evil-mode controls (eg. the d key will no always delete the line...).
-  ;; sulution found at: http://trey-jackson.blogspot.com/2010/04/emacs-tip-36-abort-minibuffer-when.html
-  (defun stop-using-minibuffer ()
-    "kill the minibuffer"
-    (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
-      (abort-recursive-edit)))
-  (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
-
+  ;;;; Slime/common-lisp config
   (defun slime-enable-smartparens ()
     (smartparens-strict-mode t)
     (turn-on-smartparens-mode))
   (remove-hook 'slime-repl-mode-hook #'slime/disable-smartparens)
   (add-hook 'slime-repl-mode-hook #'slime-enable-smartparens)
   ;;TODO: the smartparens thing doesn't seem to work... still has to be enabled manually
+
   (defun slime-enable-rainbow-init ()
     (font-lock-mode -1)
     (rainbow-delimiters-mode)
     (font-lock-mode))
   (add-hook 'slime-repl-mode-hook #'slime-enable-rainbow-init)
+
   (add-hook 'slime-repl-mode-hook
             (lambda ()
               (define-key slime-repl-mode-map (kbd "C-<return>") #'slime-repl-newline-and-indent)))
 
-  ;; Haskell config
+  ;;;; Haskell config
   ;; Somehow the flycheck checkers get changed and the order of the chekcers gets messed up.
   ;; This ensures that haskell-stack-ghc is at the front of the checkers list and therefore gets prioritised.
   ;; If haskell completion backend dante is specified in the variables, it prepends dante to the checkers.
@@ -739,10 +757,7 @@ before packages are loaded."
   ;; (setq flycheck-checkers (cons 'haskell-stack-ghc flycheck-checkers))
   ;; (setq sanity-check flycheck-checkers)
 
-  ;; My custom keybindings
-  ;; (global-set-key (kbd "M-<up>") 'move-text-up)
-  ;; (global-set-key (kbd "M-<down>") 'move-text-down)
-
+  ;;;; Clojure config
   (add-hook 'cider-repl-mode-hook
             (lambda ()
               ;; (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-newline-and-indent)
@@ -750,16 +765,18 @@ before packages are loaded."
               (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-return)
               (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-newline-and-indent)))
 
+  ;;;; Racket cofig
   (add-hook 'racket-repl-mode-hook
             (lambda ()
               (company-mode)
               (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)))
 
+  ;;;; Emacs Lisp config
   (add-hook 'inferior-emacs-lisp-mode
             (lambda ()
               (define-key inferior-emacs-lisp-mode-map (kbd "C-<return>") 'newline-and-indent)))
 
-  ;; Erlang settings
+  ;;;; Erlang config
   ;; (when (eq system-type 'windows-nt)
   ;;   (add-to-list 'load-path "C:/erl-23.0/lib/tools-3.4/emacs")
   ;;   (setq erlang-root-dir "C:/erl-23.0")
@@ -777,16 +794,6 @@ before packages are loaded."
   ;;             (lambda ()
   ;;               (setq ivy-erlang-complete-erlang-root "C:/erl-23.0"))))
 
-  ;; Windows specifig user-config settigs
-  (when (eq system-type 'windows-nt)
-    nil
-    )
-
-
-  ;; Toggle treemacs on startup
-  ;; (there is a small delay probably because of the emacs startup process)
-  ;; (treemacs-set-width 25)
-  ;; (treemacs)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
