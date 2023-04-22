@@ -93,6 +93,7 @@ This function should only modify configuration layer settings."
 
      ;;;; Web Stuff begin
      html
+     (json :variables json-fmt-tool 'web-beautify)
      (javascript :variables
                  js2-mode-show-strict-warnings nil
                  javascript-backend 'tern
