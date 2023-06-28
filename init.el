@@ -744,6 +744,7 @@ before packages are loaded."
   (my-set-indent-levels)
 
   ;;;; Web and javascript/typescript
+  ;; TODO: is this still necessary?
   (when (eq system-type 'windows-nt)
     ;; Windows users may have to set tern path manually for it to work
     '(tern-command '("node" "tern")))
@@ -782,16 +783,22 @@ before packages are loaded."
               (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-return)
               (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-newline-and-indent)))
 
+  ;;;; Emacs Lisp config
+  (add-hook 'inferior-emacs-lisp-mode
+            (lambda ()
+              (define-key inferior-emacs-lisp-mode-map (kbd "C-<return>") 'newline-and-indent)))
+
   ;;;; Racket cofig
   (add-hook 'racket-repl-mode-hook
             (lambda ()
               (company-mode)
               (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)))
 
-  ;;;; Emacs Lisp config
-  (add-hook 'inferior-emacs-lisp-mode
+  ;;;; Toml config
+  (add-hook 'toml-mode-hook
             (lambda ()
-              (define-key inferior-emacs-lisp-mode-map (kbd "C-<return>") 'newline-and-indent)))
+              (turn-on-smartparens-mode)))
+
 
   ;;;; Erlang config
   ;; (when (eq system-type 'windows-nt)
