@@ -756,6 +756,8 @@ before packages are loaded."
   (remove-hook 'slime-repl-mode-hook #'slime/disable-smartparens)
   (add-hook 'slime-repl-mode-hook #'slime-enable-smartparens)
   ;;TODO: the smartparens thing doesn't seem to work... still has to be enabled manually
+  ;;TODO: see Toml config. Simply add a hook to #'smartparens-mode
+  ;; #'turn-on-smartparens-mode is for enabling it globally, even for modes where it is disabled by default.
 
   (defun slime-enable-rainbow-init ()
     (font-lock-mode -1)
@@ -795,10 +797,7 @@ before packages are loaded."
               (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)))
 
   ;;;; Toml config
-  (add-hook 'toml-mode-hook
-            (lambda ()
-              (turn-on-smartparens-mode)))
-
+  (add-hook 'toml-mode-hook #'smartparens-mode)
 
   ;;;; Erlang config
   ;; (when (eq system-type 'windows-nt)
