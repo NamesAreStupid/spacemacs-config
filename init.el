@@ -750,13 +750,8 @@ before packages are loaded."
     '(tern-command '("node" "tern")))
 
   ;;;; Slime/common-lisp config
-  (defun slime-enable-smartparens ()
-    (smartparens-strict-mode t)
-    ;; #'turn-on-smartparens-mode is for enabling it globally, even for modes where it is disabled by default.
-    (turn-on-smartparens-mode))
   (remove-hook 'slime-repl-mode-hook #'slime/disable-smartparens)
   (remove-hook 'slime-repl-mode-hook #'spacemacs//deactivate-smartparens)
-  ;; (add-hook 'slime-repl-mode-hook #'slime-enable-smartparens)
   (add-hook 'slime-repl-mode-hook #'smartparens-mode)
 
   (defun slime-enable-rainbow-init ()
