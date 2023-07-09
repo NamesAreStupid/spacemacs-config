@@ -752,12 +752,12 @@ before packages are loaded."
   ;;;; Slime/common-lisp config
   (defun slime-enable-smartparens ()
     (smartparens-strict-mode t)
+    ;; #'turn-on-smartparens-mode is for enabling it globally, even for modes where it is disabled by default.
     (turn-on-smartparens-mode))
   (remove-hook 'slime-repl-mode-hook #'slime/disable-smartparens)
-  (add-hook 'slime-repl-mode-hook #'slime-enable-smartparens)
-  ;;TODO: the smartparens thing doesn't seem to work... still has to be enabled manually
-  ;;TODO: see Toml config. Simply add a hook to #'smartparens-mode
-  ;; #'turn-on-smartparens-mode is for enabling it globally, even for modes where it is disabled by default.
+  (remove-hook 'slime-repl-mode-hook #'spacemacs//deactivate-smartparens)
+  ;; (add-hook 'slime-repl-mode-hook #'slime-enable-smartparens)
+  (add-hook 'slime-repl-mode-hook #'smartparens-mode)
 
   (defun slime-enable-rainbow-init ()
     (font-lock-mode -1)
