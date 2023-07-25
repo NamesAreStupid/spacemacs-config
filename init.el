@@ -760,6 +760,7 @@ before packages are loaded."
   (remove-hook 'slime-repl-mode-hook #'spacemacs//deactivate-smartparens)
   (add-hook 'slime-repl-mode-hook #'smartparens-mode)
 
+  ;; TODO: see Emacs Lisp config section for better approach to enable rainbow delims
   (defun slime-enable-rainbow-init ()
     (font-lock-mode -1)
     (rainbow-delimiters-mode)
@@ -787,6 +788,8 @@ before packages are loaded."
               (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-newline-and-indent)))
 
   ;;;; Emacs Lisp config
+  (add-hook 'ielm-mode-hook 'rainbow-delimiters-mode)
+  ;; (add-hook 'inferior-emacs-lisp-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'inferior-emacs-lisp-mode-hook
             (lambda ()
               (define-key ielm-map (kbd "C-<return>") #'newline-and-indent)))
