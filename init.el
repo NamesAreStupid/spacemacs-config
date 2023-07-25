@@ -792,6 +792,10 @@ before packages are loaded."
   ;; (add-hook 'inferior-emacs-lisp-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'inferior-emacs-lisp-mode-hook
             (lambda ()
+              (evil-define-key 'insert ielm-map
+                (kbd "<up>") nil
+                (kbd "<down>") nil)
+              (define-key ielm-map (kbd "<return>") #'ielm-send-input)
               (define-key ielm-map (kbd "C-<return>") #'newline-and-indent)))
 
   ;;;; Racket cofig
