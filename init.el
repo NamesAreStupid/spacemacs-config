@@ -718,6 +718,32 @@ before packages are loaded."
   ;; (treemacs)
 
 
+  ;;;; Theming Customizations
+
+  (defun my/customize-doom-dracula (enabled-theme &rest r)
+    "Customizations for the `doom-dracula' theme.
+These are to be added as an advice for `load-theme'. I chose a named function
+over a lambda, so the advice can be easily removed if need be."
+    (when (eq enabled-theme 'doom-dracula)
+      ;; Since emacs 27.1 themes are no longer activated by simply loading a theme file.
+      ;; To actually activate a theme the functions `load-theme' or `enable-theme' are necessary.
+      ;; The variable `custom--inhibit-theme-enable' controls this behavior.
+      ;; See:
+      ;; https://github.com/emacs-mirror/emacs/blob/emacs-27.1/etc/NEWS#L2393
+      ;; https://emacs.stackexchange.com/questions/48365/custom-theme-set-faces-does-not-work-in-emacs-27
+      ;; This `let' will shadow the variable.
+      ;; Alternatively `(enable-theme 'doom-dracula)' would have to be applied after `custom-theme-set-faces'.
+      (let ((custom--inhibit-theme-enable nil))
+        (custom-theme-set-faces
+         'doom-dracula
+         ;; TODO: matching parentheses shuould be underlined. For reference see `spacemacs-dark' theme.
+         ;; The official spec for the dracula theme has these colors.
+         ;; Originally I did it because it increased visibility in Rust.
+         `(font-lock-type-face ((t :foreground ,(doom-color 'cyan))))
+         `(font-lock-constant-face ((t :foreground ,(doom-color 'violet))))))))
+  (advice-add 'load-theme :after #'my/customize-doom-dracula)
+
+
   ;;;; Key bindings
 
   ;; My custom keybindings
