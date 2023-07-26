@@ -788,9 +788,8 @@ before packages are loaded."
               (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-newline-and-indent)))
 
   ;;;; Emacs Lisp config
-  ;; (add-hook 'ielm-mode-hook 'rainbow-delimiters-mode)
-  (add-hook 'inferior-emacs-lisp-mode-hook 'rainbow-delimiters-mode)
-  (add-hook 'inferior-emacs-lisp-mode-hook
+  (add-hook 'ielm-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'ielm-mode-hook
             (lambda ()
               (evil-define-key 'insert ielm-map
                 (kbd "<up>") nil
