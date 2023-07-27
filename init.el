@@ -720,6 +720,35 @@ before packages are loaded."
 
   ;;;; Theming Customizations
 
+  (defun my/customize-doom-all-themes (enabled-theme &rest r)
+    "Customizayion for all `doom' themes. They have a common baseline and it
+includes certain undesirable properties."
+    (when (string-match "doom" (symbol-name enabled-theme))
+      ;; These settings improve highlighting of mathcing parentheses.
+      ;; The settings are taken from the `spacemacs-dark' theme. (This is not ideal but whatever for now.)
+      (let* ((custom--inhibit-theme-enable nil)
+            ;; This is so I can simply copy values from the `spacemacs-dark' theme
+            ;; (variant (make-symbol "dark"))
+            (variant (intern "dark"))
+            (spacemacs-theme-underline-parens t)
+            ;; Colors taken from `spacemacs-dark'
+            (class '((class color) (min-colors 89)))
+            (err           (if (eq variant 'dark) (if (true-color-p) "#e0211d" "#e0211d") (if (true-color-p) "#e0211d" "#e0211d")))
+            (highlight     (if (eq variant 'dark) (if (true-color-p) "#444155" "#444444") (if (true-color-p) "#d3d3e7" "#d7d7ff")))
+            (mat           (if (eq variant 'dark) (if (true-color-p) "#86dc2f" "#86dc2f") (if (true-color-p) "#ba2f59" "#af005f")))
+            (green-bg-s    (if (eq variant 'dark) (if (true-color-p) "#29422d" "#262626") (if (true-color-p) "#dae6d0" "#ffffff"))))
+        (custom-theme-set-faces
+         enabled-theme
+         ;; show-paren
+         `(show-paren-match ((,class (:foreground ,mat :inherit bold  :underline ,(when spacemacs-theme-underline-parens t)))))
+         `(show-paren-match-expression ((,class (:background ,green-bg-s))))
+         `(show-paren-mismatch ((,class (:foreground ,err :inherit bold :underline ,(when spacemacs-theme-underline-parens t)))))
+
+         ;; smartparens
+         `(sp-pair-overlay-face ((,class (:background ,highlight :foreground unspecified))))
+         `(sp-show-pair-match-face ((,class (:foreground ,mat :inherit bold  :underline ,(when spacemacs-theme-underline-parens t)))))
+         ))))
+
   (defun my/customize-doom-dracula (enabled-theme &rest r)
     "Customizations for the `doom-dracula' theme.
 These are to be added as an advice for `load-theme'. I chose a named function
@@ -740,7 +769,12 @@ over a lambda, so the advice can be easily removed if need be."
          ;; The official spec for the dracula theme has these colors.
          ;; Originally I did it because it increased visibility in Rust.
          `(font-lock-type-face ((t :foreground ,(doom-color 'cyan))))
-         `(font-lock-constant-face ((t :foreground ,(doom-color 'violet))))))))
+         `(font-lock-constant-face ((t :foreground ,(doom-color 'violet))))
+         ;; A bit softer color, from VS Codes dracula-soft theme
+         ;; `(font-lock-comment-face ((t :foreground "#7b7f8b")))
+         ))))
+
+  (advice-add 'load-theme :after #'my/customize-doom-all-themes)
   (advice-add 'load-theme :after #'my/customize-doom-dracula)
 
 
