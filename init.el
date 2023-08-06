@@ -97,7 +97,7 @@ This function should only modify configuration layer settings."
      (javascript :variables
                  js2-mode-show-strict-warnings nil
                  javascript-backend 'tern
-                 javascript-fmt-tool 'web-beautify
+                 javascript-fmt-tool 'prettier
                  javascript-fmt-on-save t
                  javascript-import-tool 'import-js
                  javascript-repl `nodejs
