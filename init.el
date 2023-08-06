@@ -109,7 +109,7 @@ This function should only modify configuration layer settings."
      web-beautify
      (typescript :variables
                  typescript-backend 'tide)
-     ;; tide
+     tide
      ;;;; end Web Stuff
 
      ;; ;; ----------------------------------------------------------------
