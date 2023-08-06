@@ -105,10 +105,10 @@ This function should only modify configuration layer settings."
      tern
      import-js
      prettier
-     web-beautify
+     ;; web-beautify
      (typescript :variables
                  typescript-backend 'tide)
-     tide
+     ;; tide
      ;;;; end Web Stuff
 
      ;; ;; ----------------------------------------------------------------
