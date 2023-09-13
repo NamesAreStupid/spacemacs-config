@@ -322,7 +322,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-dark
+   dotspacemacs-themes '(gruvbox-dark-medium
+                         spacemacs-dark
                          spacemacs-light)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -866,6 +867,39 @@ over a lambda, so the advice can be easily removed if need be."
 
   ;;;; Toml config
   (add-hook 'toml-mode-hook #'smartparens-mode)
+
+  ;;;; Web-mode and related config
+  ;; (defun my/set-web-mode-comment-formats ()
+  ;;   (setq web-mode-comment-formats '(("java" . "//")
+  ;;                                    ("javascript" . "//")
+  ;;                                    ("typescript" . "//")
+  ;;                                    ;; ("jsx" . "/*  */")
+  ;;                                    ;; ("tsx" . "/*  */")
+  ;;                                    ("jsx" . "/*")
+  ;;                                    ("tsx" . "/*")
+  ;;                                    ("php" . "//")
+  ;;                                    ("css" . "//"))))
+  ;; (add-hook 'web-mode-hook #'my/set-web-mode-comment-formats)
+  ;; (remove-hook 'web-mode-hook #'my/set-web-mode-comment-formats)
+  ;; (add-hook 'web-mode-hook #'(lambda ()
+  ;;                              (setq web-mode-comment-formats '(("java" . "//")
+  ;;                                                               ("javascript" . "//")
+  ;;                                                               ("typescript" . "//")
+  ;;                                                               ;; ("jsx" . "/*  */")
+  ;;                                                               ;; ("tsx" . "/*  */")
+  ;;                                                               ("jsx" . "/*")
+  ;;                                                               ("tsx" . "/*")
+  ;;                                                               ("php" . "//")
+  ;;                                                               ("css" . "//")))))
+
+
+  ;;;; Typescript-tsx-mode config
+  ;; (add-hook 'typescript-tsx-mode-hook
+  ;;           #'(lambda ()
+  ;;               (setq comment-region-function 'rjsx-comment-region-function)
+  ;;               (setq uncomment-region-function 'rjsx-uncomment-region-function)))
+  (add-hook 'typescript-tsx-mode-hook #'rjsx-mode)
+
 
   ;;;; Erlang config
   ;; (when (eq system-type 'windows-nt)
