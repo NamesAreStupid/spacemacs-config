@@ -681,6 +681,8 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
   ;;;; General Settings
 
+  (setq word-wrap t)
+
   ;; Disable auto hiding scroll bars, so they never show up.
   (advice-remove 'mwheel-scroll #'spacemacs//scroll-bar-show-delayed-hide)
 
