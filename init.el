@@ -93,14 +93,15 @@ This function should only modify configuration layer settings."
 
      ;;;; Web Stuff begin
      html
-     (json :variables json-fmt-tool 'web-beautify)
+     (json :variables json-fmt-tool 'prettier) ;;'web-beautify)
      (javascript :variables
                  js2-mode-show-strict-warnings nil
-                 javascript-backend 'tern
+                 ;; javascript-backend 'tern
                  javascript-fmt-tool 'prettier
+                 ;; javascript-fmt-tool 'web-beautify ;; this is default
                  javascript-fmt-on-save t
                  javascript-import-tool 'import-js
-                 javascript-repl `nodejs
+                 javascript-repl 'nodejs
                  node-add-modules-path t)
      react
      tern
@@ -110,6 +111,7 @@ This function should only modify configuration layer settings."
      (typescript :variables
                  typescript-backend 'tide)
      tide
+     restclient
      ;;;; end Web Stuff
 
      ;; ;; ----------------------------------------------------------------
@@ -681,6 +683,8 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
   ;;;; General Settings
 
+  (setq-default word-wrap nil)
+
   ;; Disable auto hiding scroll bars, so they never show up.
   (advice-remove 'mwheel-scroll #'spacemacs//scroll-bar-show-delayed-hide)
 
@@ -816,6 +820,11 @@ over a lambda, so the advice can be easily removed if need be."
   (when (eq system-type 'windows-nt)
     ;; Windows users may have to set tern path manually for it to work
     '(tern-command '("node" "tern")))
+
+  ;;;; Restclient
+  (add-hook 'restclient-mode-hook #'smartparens-mode)
+  (add-hook 'restclient-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'restclient-mode-hook #'display-line-numbers-mode)
 
   ;;;; Slime/common-lisp config
   (remove-hook 'slime-repl-mode-hook #'slime/disable-smartparens)
