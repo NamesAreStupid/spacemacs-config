@@ -695,13 +695,13 @@ before packages are loaded."
   ;; change mouse-wheel-scroll-amount
   (setq mouse-wheel-scroll-amount '(3))
 
+  ;; Disable mouse-wheel-progressive-speed
+  (setq mouse-wheel-progressive-speed nil)
+
   ;; If this is set to 't' dired will use the ls provided by the system.
   ;; This was necessary because it would keep complaining about some issues (???)
   ;; I guess now a ls command has to be provided on windows eg. through mingw.
   (setq ls-lisp-use-insert-directory-program t)
-
-  ;; Disable mouse-wheel-progressive-speed
-  (setq mouse-wheel-progressive-speed nil)
 
   ;; Stop using the minibuffer when mouse leaves it.
   ;; If the mousecursor is put somewhere else, while the minibuffer is still active,
