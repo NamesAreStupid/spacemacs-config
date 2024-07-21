@@ -109,7 +109,8 @@ This function should only modify configuration layer settings."
      prettier
      web-beautify
      (typescript :variables
-                 typescript-backend 'tide)
+                 ;; typescript-backend 'tide)
+                 typescript-backend 'lsp)
      tide
      restclient
      ;;;; end Web Stuff
@@ -790,6 +791,10 @@ over a lambda, so the advice can be easily removed if need be."
   ;; (global-set-key (kbd "M-<up>") 'move-text-up)
   ;; (global-set-key (kbd "M-<down>") 'move-text-down)
 
+  ;;;; Smartparens
+  (add-hook 'smartparens-mode-hook
+            (lambda ()
+              (define-key smartparens-mode-map (kbd "C-|") #'sp-up-sexp)))
 
   ;;;; Programming languages
 
