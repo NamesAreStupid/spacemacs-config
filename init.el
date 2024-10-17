@@ -44,6 +44,7 @@ This function should only modify configuration layer settings."
             c-c++-adopt-subprojects t
             ;; c-c++-backend 'lsp-ccls
             c-c++-dap-adapters '(dap-cpptools dap-gdb-lldb dap-lldb)
+            c-c++-enable-clang-format-on-save t
             c-c++-lsp-enable-semantic-highlight 'rainbow)
      (clojure :variables
               clojure-enable-clj-refactor t
@@ -65,6 +66,10 @@ This function should only modify configuration layer settings."
          go-format-before-save t
          godoc-at-point-function 'godoc-gogetdoc
          go-tab-width 4)
+     (haskell :variables
+              ;; haskell-completion-backend 'dante
+              haskell-enable-hindent t)
+     java
      markdown
      ;; neotree
      ;; org
@@ -78,6 +83,7 @@ This function should only modify configuration layer settings."
      ;; (spell-checking :variables spell-checking-enable-by-default nil)
      syntax-checking
      (treemacs :variables
+               treemacs-lock-width t
                treemacs-use-follow-mode t)
      ;; version-control
      (version-control :variables
@@ -855,6 +861,16 @@ over a lambda, so the advice can be easily removed if need be."
   ;; (setq flycheck-checkers (cons 'haskell-stack-ghc flycheck-checkers))
   ;; (setq sanity-check flycheck-checkers)
 
+  ;;;; C Cpp config
+  (setq-default c-basic-offset 4)
+  (defun my/c-mode-common-config ()
+    (setq comment-start "// "
+          comment-end "")
+    (with-eval-after-load 'smartparens
+      (sp-pair "'" nil :actions :rem)))
+  (add-hook 'c-mode-common-hook
+            #' my/c-mode-common-config)
+
   ;;;; Clojure config
   (add-hook 'cider-repl-mode-hook
             (lambda ()
@@ -872,6 +888,11 @@ over a lambda, so the advice can be easily removed if need be."
                 (kbd "<down>") nil)
               (define-key ielm-map (kbd "<return>") #'ielm-send-input)
               (define-key ielm-map (kbd "C-<return>") #'newline-and-indent)))
+
+  ;;;; Java config
+  (defun my/java-config ()
+    (setq tab-width 4))
+  (add-hook 'java-mode-hook #'my/java-config)
 
   ;;;; Racket cofig
   (add-hook 'racket-repl-mode-hook
