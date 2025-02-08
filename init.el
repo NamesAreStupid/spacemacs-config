@@ -49,8 +49,15 @@ This function should only modify configuration layer settings."
      (clojure :variables
               clojure-enable-clj-refactor t
               clojure-enable-sayid t
-              clojure-enable-linters 'joker
+              ;; clojure-enable-linters 'joker
+              clojure-enable-linters 'clj-kondo
+              clojure-enable-kaocha-runner t
               clojure-backend 'cider)
+     ;; (cmake :variables cmake-backend 'company-cmake)
+     (cmake :variables
+            cmake-backend 'company-make
+            ;; cmake-backend 'lsp
+            cmake-enable-cmake-ide-support t)
      ;; clojure-lint
      common-lisp
      dap
@@ -681,7 +688,6 @@ This function is called only while dumping Spacemacs configuration. You can
 dump."
 )
 
-
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
@@ -861,6 +867,25 @@ over a lambda, so the advice can be easily removed if need be."
   ;; (setq flycheck-checkers (cons 'haskell-stack-ghc flycheck-checkers))
   ;; (setq sanity-check flycheck-checkers)
 
+  ;; Interactive-Haskell
+  (add-hook 'haskell-interactive-mode-hook #'slime-enable-rainbow-init)
+  (add-hook 'haskell-interactive-mode-hook #'smartparens-mode)
+
+  (add-hook 'haskell-interactive-mode-hook
+            (lambda ()
+              (define-key haskell-interactive-mode-map
+                          (kbd "C-<return>")
+                          #'haskell-interactive-mode-newline-indent)))
+  ;; (add-hook 'haskell-interactive-mode-hook
+  ;;           (lambda ()
+  ;;             (define-key haskell-interactive-mode-map
+  ;;                         (kbd "C-<return>")
+  ;;                         (lambda ()
+  ;;                           (message "I'm newlining in interactive haskell!!!")
+  ;;                           (haskell-interactive-mode-newline-and-indent)))))
+  (add-hook 'haskell-interactive-mode-hook
+            #'my/haskell-interactive-keybinds)
+
   ;;;; C Cpp config
   (setq-default c-basic-offset 4)
   (defun my/c-mode-common-config ()
@@ -898,7 +923,12 @@ over a lambda, so the advice can be easily removed if need be."
   (add-hook 'racket-repl-mode-hook
             (lambda ()
               (company-mode)
-              (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)))
+              (smartparens-mode)
+              (rainbow-delimiters-mode)
+              (define-key racket-repl-mode-map (kbd "C-<return>") #'newline-and-indent)
+              (define-key racket-repl-mode-map (kbd "C-<up>") #'racket-repl-previous-input)
+              (define-key racket-repl-mode-map (kbd "C-<down>") #'racket-repl-next-input)))
+
 
   ;;;; Toml config
   (add-hook 'toml-mode-hook #'smartparens-mode)
@@ -970,7 +1000,19 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
-   '(rjsx-mode yapfify yaml-mode ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit sql-indent spaceline powerline smeargle slime-company slime slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racket-mode pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pip-requirements persp-mode pcre2el paradox orgit org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup magit macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint js2-refactor js2-mode js-doc indent-guide dash-functional hungry-delete htmlize hl-todo highlight-parentheses parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter git-commit gh-md fuzzy flycheck-pos-tip flycheck-joker flycheck flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit smartparens evil-indent-plus iedit evil-exchange evil-escape evil-ediff evil-args evil goto-chg erlang emmet-mode elisp-slime-nav with-editor polymode deferred request anaphora websocket dumb-jump dockerfile-mode docker transient tablist json-mode docker-tramp json-snatcher json-reformat disaster diminish diff-hl define-word cython-mode company-web web-completion-data company-statistics company-quickhelp pos-tip company-go go-mode company-c-headers company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode cmake-mode clojure-snippets clj-refactor hydra inflections multiple-cursors paredit lv clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu cider sesman seq spinner queue pkg-info parseedn clojure-mode parseclj a epl bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup))
+   '(cmake-ide levenshtein yapfify yaml-mode ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit sql-indent spaceline powerline smeargle slime-company slime slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racket-mode pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pip-requirements persp-mode pcre2el paradox orgit org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup magit macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint js2-refactor js2-mode js-doc indent-guide dash-functional hungry-delete htmlize hl-todo highlight-parentheses parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter git-commit gh-md fuzzy flycheck-pos-tip flycheck-joker flycheck flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit smartparens evil-indent-plus iedit evil-exchange evil-escape evil-ediff evil-args evil goto-chg erlang emmet-mode elisp-slime-nav with-editor polymode deferred request anaphora websocket dumb-jump dockerfile-mode docker transient tablist json-mode docker-tramp json-snatcher json-reformat disaster diminish diff-hl define-word cython-mode company-web web-completion-data company-statistics company-quickhelp pos-tip company-go go-mode company-c-headers company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode cmake-mode clojure-snippets clj-refactor hydra inflections multiple-cursors paredit lv clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu cider sesman seq spinner queue pkg-info parseedn clojure-mode parseclj a epl bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup))
+ '(safe-local-variable-values
+   '((helm-ctest-dir . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build/")
+     (helm-make-arguments . "-j3")
+     (helm-make-build-dir . "build")
+     (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug")
+     (cmake-ide-build-dir . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build")
+     (cmake-ide-project-dir . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris")
+     (typescript-backend . tide)
+     (typescript-backend . lsp)
+     (javascript-backend . tide)
+     (javascript-backend . tern)
+     (javascript-backend . lsp)))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
