@@ -688,6 +688,7 @@ This function is called only while dumping Spacemacs configuration. You can
 dump."
 )
 
+
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
@@ -870,21 +871,11 @@ over a lambda, so the advice can be easily removed if need be."
   ;; Interactive-Haskell
   (add-hook 'haskell-interactive-mode-hook #'slime-enable-rainbow-init)
   (add-hook 'haskell-interactive-mode-hook #'smartparens-mode)
-
   (add-hook 'haskell-interactive-mode-hook
             (lambda ()
               (define-key haskell-interactive-mode-map
                           (kbd "C-<return>")
                           #'haskell-interactive-mode-newline-indent)))
-  ;; (add-hook 'haskell-interactive-mode-hook
-  ;;           (lambda ()
-  ;;             (define-key haskell-interactive-mode-map
-  ;;                         (kbd "C-<return>")
-  ;;                         (lambda ()
-  ;;                           (message "I'm newlining in interactive haskell!!!")
-  ;;                           (haskell-interactive-mode-newline-and-indent)))))
-  (add-hook 'haskell-interactive-mode-hook
-            #'my/haskell-interactive-keybinds)
 
   ;;;; C Cpp config
   (setq-default c-basic-offset 4)
