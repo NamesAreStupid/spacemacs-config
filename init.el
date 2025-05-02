@@ -961,8 +961,10 @@ over a lambda, so the advice can be easily removed if need be."
   ;;           #'(lambda ()
   ;;               (setq comment-region-function 'rjsx-comment-region-function)
   ;;               (setq uncomment-region-function 'rjsx-uncomment-region-function)))
-  (add-hook 'typescript-tsx-mode-hook #'rjsx-mode)
-
+  ;; (add-hook 'typescript-tsx-mode-hook #'rjsx-mode)
+  (defun my/typescript-config ()
+    (setq typescript-indent-level 2))
+  ;; (add-hook 'typescript-tsx-mode-hook #'my/typescript-config)
 
   ;;;; Erlang config
   ;; (when (eq system-type 'windows-nt)
