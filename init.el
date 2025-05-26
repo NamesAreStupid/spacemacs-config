@@ -123,8 +123,11 @@ This function should only modify configuration layer settings."
      prettier
      web-beautify
      (typescript :variables
+                 typescript-fmt-tool 'prettier
+                 typescript-fmt-on-save t
+                 typescript-linter 'eslint
                  ;; typescript-backend 'tide)
-                 typescript-backend 'lsp)
+                 )
      tide
      restclient
      ;;;; end Web Stuff
@@ -961,10 +964,10 @@ over a lambda, so the advice can be easily removed if need be."
   ;;           #'(lambda ()
   ;;               (setq comment-region-function 'rjsx-comment-region-function)
   ;;               (setq uncomment-region-function 'rjsx-uncomment-region-function)))
-  ;; (add-hook 'typescript-tsx-mode-hook #'rjsx-mode)
+  (add-hook 'typescript-tsx-mode-hook #'rjsx-mode)
   (defun my/typescript-config ()
     (setq typescript-indent-level 2))
-  ;; (add-hook 'typescript-tsx-mode-hook #'my/typescript-config)
+  (add-hook 'typescript-tsx-mode-hook #'my/typescript-config)
 
   ;;;; Erlang config
   ;; (when (eq system-type 'windows-nt)
@@ -999,19 +1002,65 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(evil-want-Y-yank-to-eol nil)
+ '(ignored-local-variable-values
+   '((web-mode-indent-style . 2) (web-mode-block-padding . 2)
+     (web-mode-script-padding . 2) (web-mode-style-padding . 2)))
  '(package-selected-packages
-   '(cmake-ide levenshtein yapfify yaml-mode ws-butler winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package undo-tree toc-org tagedit sql-indent spaceline powerline smeargle slime-company slime slim-mode scss-mode sass-mode restart-emacs rainbow-delimiters racket-mode pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pip-requirements persp-mode pcre2el paradox orgit org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file neotree move-text mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup magit macrostep lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint js2-refactor js2-mode js-doc indent-guide dash-functional hungry-delete htmlize hl-todo highlight-parentheses parent-mode highlight-indentation helm-themes helm-swoop helm-pydoc projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter git-commit gh-md fuzzy flycheck-pos-tip flycheck-joker flycheck flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-tutor evil-surround highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit smartparens evil-indent-plus iedit evil-exchange evil-escape evil-ediff evil-args evil goto-chg erlang emmet-mode elisp-slime-nav with-editor polymode deferred request anaphora websocket dumb-jump dockerfile-mode docker transient tablist json-mode docker-tramp json-snatcher json-reformat disaster diminish diff-hl define-word cython-mode company-web web-completion-data company-statistics company-quickhelp pos-tip company-go go-mode company-c-headers company-anaconda company common-lisp-snippets column-enforce-mode coffee-mode cmake-mode clojure-snippets clj-refactor hydra inflections multiple-cursors paredit lv clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu cider sesman seq spinner queue pkg-info parseedn clojure-mode parseclj a epl bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup))
+   '(cmake-ide levenshtein yapfify yaml-mode ws-butler winum which-key web-mode
+               web-beautify volatile-highlights vi-tilde-fringe uuidgen
+               use-package undo-tree toc-org tagedit sql-indent spaceline
+               powerline smeargle slime-company slime slim-mode scss-mode
+               sass-mode restart-emacs rainbow-delimiters racket-mode pyvenv
+               pytest pyenv-mode py-isort pug-mode powershell popwin
+               pip-requirements persp-mode pcre2el paradox orgit
+               org-category-capture org-present org-pomodoro alert log4e gntp
+               org-plus-contrib org-mime org-download org-bullets open-junk-file
+               neotree move-text mmm-mode markdown-toc markdown-mode
+               magit-gitflow magit-popup magit macrostep lorem-ipsum livid-mode
+               skewer-mode simple-httpd live-py-mode linum-relative link-hint
+               js2-refactor js2-mode js-doc indent-guide dash-functional
+               hungry-delete htmlize hl-todo highlight-parentheses parent-mode
+               highlight-indentation helm-themes helm-swoop helm-pydoc
+               projectile helm-mode-manager helm-make helm-gitignore helm-flx
+               helm-descbinds helm-css-scss helm-company helm-c-yasnippet
+               helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc
+               gnuplot gitignore-mode gitconfig-mode gitattributes-mode
+               git-timemachine git-messenger git-link git-gutter-fringe+
+               git-gutter-fringe fringe-helper git-gutter+ git-gutter git-commit
+               gh-md fuzzy flycheck-pos-tip flycheck-joker flycheck flx-ido flx
+               fill-column-indicator fancy-battery eyebrowse expand-region
+               exec-path-from-shell evil-visualstar evil-visual-mark-mode
+               evil-tutor evil-surround highlight evil-numbers
+               evil-nerd-commenter evil-mc evil-matchit smartparens
+               evil-indent-plus iedit evil-exchange evil-escape evil-ediff
+               evil-args evil goto-chg erlang emmet-mode elisp-slime-nav
+               with-editor polymode deferred request anaphora websocket
+               dumb-jump dockerfile-mode docker transient tablist json-mode
+               docker-tramp json-snatcher json-reformat disaster diminish
+               diff-hl define-word cython-mode company-web web-completion-data
+               company-statistics company-quickhelp pos-tip company-go go-mode
+               company-c-headers company-anaconda company common-lisp-snippets
+               column-enforce-mode coffee-mode cmake-mode clojure-snippets
+               clj-refactor hydra inflections multiple-cursors paredit lv
+               clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu
+               cider sesman seq spinner queue pkg-info parseedn clojure-mode
+               parseclj a epl bind-map bind-key auto-yasnippet yasnippet
+               auto-highlight-symbol auto-compile packed anaconda-mode pythonic
+               f dash s aggressive-indent adaptive-wrap ace-window ace-link
+               ace-jump-helm-line helm avy helm-core async ac-ispell
+               auto-complete popup))
  '(safe-local-variable-values
-   '((helm-ctest-dir . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build/")
-     (helm-make-arguments . "-j3")
-     (helm-make-build-dir . "build")
+   '((js2-basic-offset . 2)
+     (helm-ctest-dir
+      . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build/")
+     (helm-make-arguments . "-j3") (helm-make-build-dir . "build")
      (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug")
-     (cmake-ide-build-dir . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build")
-     (cmake-ide-project-dir . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris")
-     (typescript-backend . tide)
-     (typescript-backend . lsp)
-     (javascript-backend . tide)
-     (javascript-backend . tern)
+     (cmake-ide-build-dir
+      . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build")
+     (cmake-ide-project-dir
+      . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris")
+     (typescript-backend . tide) (typescript-backend . lsp)
+     (javascript-backend . tide) (javascript-backend . tern)
      (javascript-backend . lsp)))
  '(warning-suppress-types '((comp))))
 (custom-set-faces
