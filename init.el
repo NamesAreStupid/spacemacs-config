@@ -705,7 +705,7 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  ;;;; General Settings
+;;;; General Settings
 
   (setq-default word-wrap t)
 
@@ -748,7 +748,7 @@ before packages are loaded."
   ;; (treemacs)
 
 
-  ;;;; Theming Customizations
+;;;; Theming Customizations
 
   (defun my/customize-doom-all-themes (enabled-theme &rest r)
     "Customizayion for all `doom' themes. They have a common baseline and it
@@ -757,16 +757,16 @@ includes certain undesirable properties."
       ;; These settings improve highlighting of mathcing parentheses.
       ;; The settings are taken from the `spacemacs-dark' theme. (This is not ideal but whatever for now.)
       (let* ((custom--inhibit-theme-enable nil)
-            ;; This is so I can simply copy values from the `spacemacs-dark' theme
-            ;; (variant (make-symbol "dark"))
-            (variant (intern "dark"))
-            (spacemacs-theme-underline-parens t)
-            ;; Colors taken from `spacemacs-dark'
-            (class '((class color) (min-colors 89)))
-            (err           (if (eq variant 'dark) (if (true-color-p) "#e0211d" "#e0211d") (if (true-color-p) "#e0211d" "#e0211d")))
-            (highlight     (if (eq variant 'dark) (if (true-color-p) "#444155" "#444444") (if (true-color-p) "#d3d3e7" "#d7d7ff")))
-            (mat           (if (eq variant 'dark) (if (true-color-p) "#86dc2f" "#86dc2f") (if (true-color-p) "#ba2f59" "#af005f")))
-            (green-bg-s    (if (eq variant 'dark) (if (true-color-p) "#29422d" "#262626") (if (true-color-p) "#dae6d0" "#ffffff"))))
+             ;; This is so I can simply copy values from the `spacemacs-dark' theme
+             ;; (variant (make-symbol "dark"))
+             (variant (intern "dark"))
+             (spacemacs-theme-underline-parens t)
+             ;; Colors taken from `spacemacs-dark'
+             (class '((class color) (min-colors 89)))
+             (err           (if (eq variant 'dark) (if (true-color-p) "#e0211d" "#e0211d") (if (true-color-p) "#e0211d" "#e0211d")))
+             (highlight     (if (eq variant 'dark) (if (true-color-p) "#444155" "#444444") (if (true-color-p) "#d3d3e7" "#d7d7ff")))
+             (mat           (if (eq variant 'dark) (if (true-color-p) "#86dc2f" "#86dc2f") (if (true-color-p) "#ba2f59" "#af005f")))
+             (green-bg-s    (if (eq variant 'dark) (if (true-color-p) "#29422d" "#262626") (if (true-color-p) "#dae6d0" "#ffffff"))))
         (custom-theme-set-faces
          enabled-theme
          ;; show-paren
@@ -808,33 +808,33 @@ over a lambda, so the advice can be easily removed if need be."
   (advice-add 'load-theme :after #'my/customize-doom-dracula)
 
 
-  ;;;; Key bindings
+;;;; Key bindings
 
   ;; My custom keybindings
   ;; (global-set-key (kbd "M-<up>") 'move-text-up)
   ;; (global-set-key (kbd "M-<down>") 'move-text-down)
 
-  ;;;; Smartparens
+;;;; Smartparens
   (add-hook 'smartparens-mode-hook
             (lambda ()
               (define-key smartparens-mode-map (kbd "C-|") #'sp-up-sexp)))
 
-  ;;;; Programming languages
+;;;; Programming languages
 
   ;; Indentation setup. found at https://stackoverflow.com/questions/36719386/spacemacs-set-tab-width
   ;; (defun my-setup-indent (n)
-    ;; java/c/c++
-    ;; (setq c-basic-offset n)
-    ;; web development
-    ;; (setq coffee-tab-width n) ; coffeescript
-    ;; (setq javascript-indent-level n) ; javascript-mode
-    ;; (setq js-indent-level n) ; js-mode
-    ;; (setq js2-basic-offset n) ; js2-mode, in latest js2-mode, it's alias of js-indent-level
-    ;; (setq web-mode-markup-indent-offset n) ; web-mode, html tag in html file
-    ;; (setq web-mode-css-indent-offset n) ; web-mode, css in html file
-    ;; (setq web-mode-code-indent-offset n) ; web-mode, js code in html file
-    ;; (setq css-indent-offset n) ; css-mode
-    ;; )
+  ;; java/c/c++
+  ;; (setq c-basic-offset n)
+  ;; web development
+  ;; (setq coffee-tab-width n) ; coffeescript
+  ;; (setq javascript-indent-level n) ; javascript-mode
+  ;; (setq js-indent-level n) ; js-mode
+  ;; (setq js2-basic-offset n) ; js2-mode, in latest js2-mode, it's alias of js-indent-level
+  ;; (setq web-mode-markup-indent-offset n) ; web-mode, html tag in html file
+  ;; (setq web-mode-css-indent-offset n) ; web-mode, css in html file
+  ;; (setq web-mode-code-indent-offset n) ; web-mode, js code in html file
+  ;; (setq css-indent-offset n) ; css-mode
+  ;; )
   ;; (my-setup-indent 2) ;; set indentation level to 2
 
   (defun my-set-indent-levels ()
@@ -843,18 +843,28 @@ over a lambda, so the advice can be easily removed if need be."
     )
   (my-set-indent-levels)
 
-  ;;;; Web and javascript/typescript
+
+;;;; LSP
+  (defun my/lsp-flycheck-face-fix ()
+    (when (facep 'lsp-flycheck-error-unnecessary-face)
+      (set-face-attribute 'lsp-flycheck-error-unnecessary-face nil
+                          :underline (list :style 'wave
+                                           :color (face-foreground 'warning nil "yellow")))))
+  (add-hook 'flycheck-after-syntax-check-hook #'my/lsp-flycheck-face-fix)
+
+
+;;;; Web and javascript/typescript
   ;; TODO: is this still necessary?
   (when (eq system-type 'windows-nt)
     ;; Windows users may have to set tern path manually for it to work
     '(tern-command '("node" "tern")))
 
-  ;;;; Restclient
+;;;; Restclient
   (add-hook 'restclient-mode-hook #'smartparens-mode)
   (add-hook 'restclient-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'restclient-mode-hook #'display-line-numbers-mode)
 
-  ;;;; Slime/common-lisp config
+;;;; Slime/common-lisp config
   (remove-hook 'slime-repl-mode-hook #'slime/disable-smartparens)
   (remove-hook 'slime-repl-mode-hook #'spacemacs//deactivate-smartparens)
   (add-hook 'slime-repl-mode-hook #'smartparens-mode)
@@ -870,7 +880,7 @@ over a lambda, so the advice can be easily removed if need be."
             (lambda ()
               (define-key slime-repl-mode-map (kbd "C-<return>") #'slime-repl-newline-and-indent)))
 
-  ;;;; Haskell config
+;;;; Haskell config
   ;; Somehow the flycheck checkers get changed and the order of the chekcers gets messed up.
   ;; This ensures that haskell-stack-ghc is at the front of the checkers list and therefore gets prioritised.
   ;; If haskell completion backend dante is specified in the variables, it prepends dante to the checkers.
@@ -887,7 +897,7 @@ over a lambda, so the advice can be easily removed if need be."
                           (kbd "C-<return>")
                           #'haskell-interactive-mode-newline-indent)))
 
-  ;;;; C Cpp config
+;;;; C Cpp config
   (setq-default c-basic-offset 4)
   (defun my/c-mode-common-config ()
     (setq comment-start "// "
@@ -897,7 +907,7 @@ over a lambda, so the advice can be easily removed if need be."
   (add-hook 'c-mode-common-hook
             #' my/c-mode-common-config)
 
-  ;;;; Clojure config
+;;;; Clojure config
   (add-hook 'cider-repl-mode-hook
             (lambda ()
               ;; (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-newline-and-indent)
@@ -905,7 +915,7 @@ over a lambda, so the advice can be easily removed if need be."
               (define-key cider-repl-mode-map (kbd "RET") #'cider-repl-return)
               (define-key cider-repl-mode-map (kbd "C-<return>") #'cider-repl-newline-and-indent)))
 
-  ;;;; Emacs Lisp config
+;;;; Emacs Lisp config
   (add-hook 'ielm-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'ielm-mode-hook
             (lambda ()
@@ -915,12 +925,12 @@ over a lambda, so the advice can be easily removed if need be."
               (define-key ielm-map (kbd "<return>") #'ielm-send-input)
               (define-key ielm-map (kbd "C-<return>") #'newline-and-indent)))
 
-  ;;;; Java config
+;;;; Java config
   (defun my/java-config ()
     (setq tab-width 4))
   (add-hook 'java-mode-hook #'my/java-config)
 
-  ;;;; Racket cofig
+;;;; Racket cofig
   (add-hook 'racket-repl-mode-hook
             (lambda ()
               (company-mode)
@@ -931,10 +941,10 @@ over a lambda, so the advice can be easily removed if need be."
               (define-key racket-repl-mode-map (kbd "C-<down>") #'racket-repl-next-input)))
 
 
-  ;;;; Toml config
+;;;; Toml config
   (add-hook 'toml-mode-hook #'smartparens-mode)
 
-  ;;;; Web-mode and related config
+;;;; Web-mode and related config
   ;; (defun my/set-web-mode-comment-formats ()
   ;;   (setq web-mode-comment-formats '(("java" . "//")
   ;;                                    ("javascript" . "//")
@@ -959,17 +969,19 @@ over a lambda, so the advice can be easily removed if need be."
   ;;                                                               ("css" . "//")))))
 
 
-  ;;;; Typescript-tsx-mode config
+;;;; Typescript-tsx-mode config
   ;; (add-hook 'typescript-tsx-mode-hook
   ;;           #'(lambda ()
   ;;               (setq comment-region-function 'rjsx-comment-region-function)
   ;;               (setq uncomment-region-function 'rjsx-uncomment-region-function)))
-  (add-hook 'typescript-tsx-mode-hook #'rjsx-mode)
+  ;; (add-hook 'typescript-tsx-mode-hook #'rjsx-mode)
   (defun my/typescript-config ()
+    (require 'rjsx-mode)
+    (setq-local comment-region-function 'rjsx-comment-region-function)
     (setq typescript-indent-level 2))
   (add-hook 'typescript-tsx-mode-hook #'my/typescript-config)
 
-  ;;;; Erlang config
+;;;; Erlang config
   ;; (when (eq system-type 'windows-nt)
   ;;   (add-to-list 'load-path "C:/erl-23.0/lib/tools-3.4/emacs")
   ;;   (setq erlang-root-dir "C:/erl-23.0")
