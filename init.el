@@ -1,20 +1,3 @@
-;; -*- mode: emacs-lisp; lexical-binding: t -*-
-;; This file is loaded by Spacemacs at startup.
-;; It must be stored in your home directory.
-
-(defun dotspacemacs/layers ()
-  "Layer configuration:
-This function should only modify configuration layer settings."
-  (setq-default
-   ;; Base distribution to use. This is a layer contained in the directory
-   ;; `+distribution'. For now available distributions are `spacemacs-base'
-   ;; or `spacemacs'. (default 'spacemacs)
-   dotspacemacs-distribution 'spacemacs
-
-   ;; Lazy installation of layers (i.e. layers are installed only when a file
-   ;; with a supported type is opened). Possible values are `all', `unused'
-   ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
-   ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
    ;; lazy install any layer that support lazy installation even the layers
    ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
    ;; installation feature and you have to explicitly list a layer in the
@@ -63,6 +46,7 @@ This function should only modify configuration layer settings."
      dap
      docker
      erlang
+     elixir
      (git :variables
           git-magit-status-fullscreen nil ;; t
           git-enable-github-support t
@@ -103,7 +87,12 @@ This function should only modify configuration layer settings."
      (lsp :variables
           lsp-ui-doc-position 'top
           lsp-rust-server 'rust-analyzer) ;; rust
-     themes-megapack
+     ;; themes-megapack
+     ;; (tree-sitter :variables
+     ;;              spacemacs-tree-sitter-hl-black-list '(js2-mode rjsx-mode)
+     ;;              tree-sitter-syntax-highlight-enable t
+     ;;              tree-sitter-fold-enable t
+     ;;              tree-sitter-fold-indicators-enable nil)
 
      ;;;; Web Stuff begin
      html
@@ -819,6 +808,20 @@ over a lambda, so the advice can be easily removed if need be."
             (lambda ()
               (define-key smartparens-mode-map (kbd "C-|") #'sp-up-sexp)))
 
+
+;;;; tree-sitter
+  (setq treesit-language-source-alist
+        '(
+          ;; (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+          (json "https://github.com/tree-sitter/tree-sitter-json")
+          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
+
+
+  (defun my/treesit-install-language-grammars ()
+    (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist)))
+
+
 ;;;; Programming languages
 
   ;; Indentation setup. found at https://stackoverflow.com/questions/36719386/spacemacs-set-tab-width
@@ -976,10 +979,50 @@ over a lambda, so the advice can be easily removed if need be."
   ;;               (setq uncomment-region-function 'rjsx-uncomment-region-function)))
   ;; (add-hook 'typescript-tsx-mode-hook #'rjsx-mode)
   (defun my/typescript-config ()
-    (require 'rjsx-mode)
-    (setq-local comment-region-function 'rjsx-comment-region-function)
+    ;; (require 'rjsx-mode)
+    ;; (setq-local comment-region-function 'rjsx-comment-region-function)
     (setq typescript-indent-level 2))
+  ;; (add-hook 'typescript-tsx-mode-hook #'tsx-ts-mode) ;; TODO: make this mode work
   (add-hook 'typescript-tsx-mode-hook #'my/typescript-config)
+
+
+  (defun my/tsx-jsx-node-p (node)
+    )
+
+  (defun my/tsx-comment-region-function (beg end &optional _arg)
+    "This function single line comments/uncomments jsx in a tsx typescript file.
+This should work similar to how rjsx-mode handles it for javascript."
+    ;; TODO: store original comment function
+    ;; TODO: use tree-sitter to determine if this is a jsx node
+    ;; TODO: if it is a jsx node use this comment function, use the original one otherwise.
+    (let* ((node (treesit-node-at (point)))
+           (in-jsx () ;; TODO: is this a node inside jsx
+
+                   )
+           (use-jsx-comment () ;; TODO:
+                            ))
+      ;; TODO: This is ripped from rjsx mode. stuff is probably missing
+      (cond (use-jsx-comment
+             (let ((comment-start "{/*")
+                   (comment-end "*/}"))
+               (comment-normalize-vars)
+               (comment-region-default beg end arg)))
+            (in-jsx
+             (let ((comment-start "/*")
+                   (comment-end "*/"))
+               (comment-normalize-vars)
+               (if (rjsx-wrapped-expr-p node)
+                   (if (js2-empty-expr-node-p (rjsx-wrapped-expr-child node))
+                       (let ((comment-start "{/*")
+                             (comment-end "*/}"))
+                         (comment-normalize-vars)
+                         (comment-region-default beg end arg))
+                     (comment-region-default (1+ beg) (1- end) arg))
+                 (comment-region-default beg end arg))))
+            ;; TODO: comment-region-defualt comes from newcomment.el. check whether this uses the right function.
+            (t (comment-region-default beg end arg))))
+    )
+
 
 ;;;; Erlang config
   ;; (when (eq system-type 'windows-nt)
@@ -1018,49 +1061,44 @@ This function is called at the very end of Spacemacs initialization."
    '((web-mode-indent-style . 2) (web-mode-block-padding . 2)
      (web-mode-script-padding . 2) (web-mode-style-padding . 2)))
  '(package-selected-packages
-   '(cmake-ide levenshtein yapfify yaml-mode ws-butler winum which-key web-mode
-               web-beautify volatile-highlights vi-tilde-fringe uuidgen
-               use-package undo-tree toc-org tagedit sql-indent spaceline
-               powerline smeargle slime-company slime slim-mode scss-mode
-               sass-mode restart-emacs rainbow-delimiters racket-mode pyvenv
-               pytest pyenv-mode py-isort pug-mode powershell popwin
-               pip-requirements persp-mode pcre2el paradox orgit
-               org-category-capture org-present org-pomodoro alert log4e gntp
-               org-plus-contrib org-mime org-download org-bullets open-junk-file
-               neotree move-text mmm-mode markdown-toc markdown-mode
-               magit-gitflow magit-popup magit macrostep lorem-ipsum livid-mode
-               skewer-mode simple-httpd live-py-mode linum-relative link-hint
-               js2-refactor js2-mode js-doc indent-guide dash-functional
-               hungry-delete htmlize hl-todo highlight-parentheses parent-mode
-               highlight-indentation helm-themes helm-swoop helm-pydoc
-               projectile helm-mode-manager helm-make helm-gitignore helm-flx
-               helm-descbinds helm-css-scss helm-company helm-c-yasnippet
-               helm-ag haml-mode google-translate golden-ratio go-guru go-eldoc
-               gnuplot gitignore-mode gitconfig-mode gitattributes-mode
-               git-timemachine git-messenger git-link git-gutter-fringe+
-               git-gutter-fringe fringe-helper git-gutter+ git-gutter git-commit
-               gh-md fuzzy flycheck-pos-tip flycheck-joker flycheck flx-ido flx
-               fill-column-indicator fancy-battery eyebrowse expand-region
-               exec-path-from-shell evil-visualstar evil-visual-mark-mode
-               evil-tutor evil-surround highlight evil-numbers
-               evil-nerd-commenter evil-mc evil-matchit smartparens
-               evil-indent-plus iedit evil-exchange evil-escape evil-ediff
-               evil-args evil goto-chg erlang emmet-mode elisp-slime-nav
-               with-editor polymode deferred request anaphora websocket
-               dumb-jump dockerfile-mode docker transient tablist json-mode
-               docker-tramp json-snatcher json-reformat disaster diminish
-               diff-hl define-word cython-mode company-web web-completion-data
-               company-statistics company-quickhelp pos-tip company-go go-mode
-               company-c-headers company-anaconda company common-lisp-snippets
-               column-enforce-mode coffee-mode cmake-mode clojure-snippets
-               clj-refactor hydra inflections multiple-cursors paredit lv
-               clean-aindent-mode clang-format cider-eval-sexp-fu eval-sexp-fu
-               cider sesman seq spinner queue pkg-info parseedn clojure-mode
-               parseclj a epl bind-map bind-key auto-yasnippet yasnippet
-               auto-highlight-symbol auto-compile packed anaconda-mode pythonic
-               f dash s aggressive-indent adaptive-wrap ace-window ace-link
-               ace-jump-helm-line helm avy helm-core async ac-ispell
-               auto-complete popup))
+   '(a ac-ispell ace-jump-helm-line ace-link ace-window adaptive-wrap
+       aggressive-indent alchemist alert anaconda-mode anaphora async
+       auto-compile auto-complete auto-highlight-symbol auto-yasnippet avy
+       bind-key bind-map cider cider-eval-sexp-fu clang-format
+       clean-aindent-mode clj-refactor clojure-mode clojure-snippets cmake-mode
+       coffee-mode column-enforce-mode common-lisp-snippets company
+       company-anaconda company-c-headers company-go company-quickhelp
+       company-statistics company-web cython-mode dash dash-functional deferred
+       define-word diff-hl diminish disaster docker docker-tramp dockerfile-mode
+       dumb-jump elisp-slime-nav elixir-mode emmet-mode epl erlang eval-sexp-fu
+       evil evil-args evil-ediff evil-escape evil-exchange evil-indent-plus
+       evil-matchit evil-mc evil-nerd-commenter evil-numbers evil-surround
+       evil-tutor evil-visual-mark-mode evil-visualstar exec-path-from-shell
+       expand-region eyebrowse f fancy-battery fill-column-indicator flx flx-ido
+       flycheck flycheck-credo flycheck-joker flycheck-pos-tip fringe-helper
+       fuzzy gh-md git-commit git-gutter git-gutter+ git-gutter-fringe
+       git-gutter-fringe+ git-link git-messenger git-timemachine
+       gitattributes-mode gitconfig-mode gitignore-mode gntp gnuplot go-eldoc
+       go-guru go-mode golden-ratio google-translate goto-chg haml-mode helm
+       helm-ag helm-c-yasnippet helm-company helm-core helm-css-scss
+       helm-descbinds helm-flx helm-gitignore helm-make helm-mode-manager
+       helm-pydoc helm-swoop helm-themes highlight highlight-indentation
+       highlight-parentheses hl-todo htmlize hungry-delete hydra iedit
+       indent-guide inflections js-doc js2-mode js2-refactor json-mode
+       json-reformat json-snatcher link-hint linum-relative live-py-mode
+       livid-mode log4e lorem-ipsum lv macrostep magit magit-gitflow magit-popup
+       markdown-mode markdown-toc mmm-mode move-text multiple-cursors neotree
+       ob-elixir open-junk-file org-bullets org-category-capture org-download
+       org-mime org-plus-contrib org-pomodoro org-present orgit packed paradox
+       paredit parent-mode parseclj parseedn pcre2el persp-mode pip-requirements
+       pkg-info polymode popup popwin pos-tip powerline powershell projectile
+       pug-mode py-isort pyenv-mode pytest pythonic pyvenv queue racket-mode
+       rainbow-delimiters request restart-emacs s sass-mode scss-mode seq sesman
+       simple-httpd skewer-mode slim-mode slime slime-company smartparens
+       smeargle spaceline spinner sql-indent tablist tagedit toc-org transient
+       undo-tree use-package uuidgen vi-tilde-fringe volatile-highlights
+       web-beautify web-completion-data web-mode websocket which-key winum
+       with-editor ws-butler yaml-mode yapfify yasnippet))
  '(safe-local-variable-values
    '((js2-basic-offset . 2)
      (helm-ctest-dir
