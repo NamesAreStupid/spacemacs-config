@@ -83,7 +83,13 @@ This function should only modify configuration layer settings."
      ;; neotree
      ;; org
      prolog
-     (python :variables python-backend 'anaconda)
+     (python :variables
+             python-backend 'lsp
+             importmagic-python-interpreter "python3"
+             ;; python-enable-importmagic nil ;; This will disable importmagic
+             python-enable-tools '(uv)
+             python-formatter 'ruff
+             python-format-on-save t)
      ipython-notebook
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -113,7 +119,9 @@ This function should only modify configuration layer settings."
 
      ;;;; Web Stuff begin
      html
-     (json :variables json-fmt-tool 'prettier) ;;'web-beautify)
+     (json :variables
+           json-fmt-tool 'prettier
+           json-fmt-on-save t) ;;'web-beautify)
      (javascript :variables
                  js2-mode-show-strict-warnings nil
                  ;; javascript-backend 'tern
@@ -998,47 +1006,262 @@ over a lambda, so the advice can be easily removed if need be."
   (defun my/typescript-config ()
     ;; (require 'rjsx-mode)
     ;; (setq-local comment-region-function 'rjsx-comment-region-function)
-    (setq typescript-indent-level 2))
+    (setq typescript-indent-level 2)
+    )
   ;; (add-hook 'typescript-tsx-mode-hook #'tsx-ts-mode) ;; TODO: make this mode work
-  (add-hook 'typescript-tsx-mode-hook #'my/typescript-config)
+  (add-hook 'typescript-mode-hook #'my/typescript-config)
 
+  (defun my/tsx-config ()
+    (setq typescript-indent-level 2)
+    ;; Ensure TSX parser is available
+    (require 'treesit)
+    (when (treesit-ready-p 'tsx)
+      (treesit-parser-create 'tsx))
+    (when (treesit-available-p)
+      (local-set-key (kbd "M-;") 'my/tsx-comment-dwim)
+      (local-set-key (kbd "C-x C-;") 'my/tsx-comment-dwim))
+    )
+  (add-hook 'typescript-tsx-mode-hook #'my/tsx-config)
+
+  ;; Scary Vibe Coded comment function using Claude Sonnet 4.5
+  (defun my/tsx-comment-dwim (arg)
+    "Comment or uncomment lines in TSX files based on context.
+In JSX regions, use {/* */} comments.
+In TypeScript regions, use // comments.
+With prefix ARG, uncomment if all lines are commented."
+    (interactive "*P")
+    (let* ((start (if (use-region-p) (region-beginning) (line-beginning-position)))
+           (end (if (use-region-p) (region-end) (line-end-position)))
+           ;; Check what comment style is already present on the first non-empty line
+           (existing-comment-style (my/tsx-detect-comment-style start end))
+           (in-jsx (my/tsx-in-jsx-p start)))
+      (cond
+       ;; If there are existing comments, use that style for toggling
+       ((eq existing-comment-style 'jsx)
+        (my/tsx-comment-jsx start end arg))
+       ((eq existing-comment-style 'ts)
+        (my/tsx-comment-ts start end arg))
+       ;; Otherwise, use tree-sitter context to decide
+       (in-jsx
+        (my/tsx-comment-jsx start end arg))
+       (t
+        (my/tsx-comment-ts start end arg)))))
+
+  (defun my/tsx-in-jsx-p (pos)
+    "Check if POS is inside a JSX region using tree-sitter."
+    (let ((node (treesit-node-at pos)))
+      (while (and node (not (my/tsx-jsx-node-p node)))
+        (setq node (treesit-node-parent node)))
+      node))
+
+  (defun my/tsx-detect-comment-style (start end)
+    "Detect which comment style is present in the region from START to END.
+Returns 'jsx if JSX comments found, 'ts if TypeScript comments found, nil otherwise."
+    (save-excursion
+      (goto-char start)
+      (let ((has-jsx nil)
+            (has-ts nil)
+            (end-line (line-number-at-pos end)))
+        (while (and (<= (line-number-at-pos) end-line)
+                    (not (eobp)))
+          (beginning-of-line)
+          (skip-chars-forward " \t")
+          (cond
+           ((looking-at "{?/\\*")
+            (setq has-jsx t))
+           ((looking-at "//")
+            (setq has-ts t)))
+          (forward-line 1))
+        (cond
+         (has-jsx 'jsx)
+         (has-ts 'ts)
+         (t nil)))))
+
+  (defun my/tsx-min-indentation (start end)
+    "Find the minimum indentation level in the region from START to END.
+Ignores empty lines."
+    (save-excursion
+      (goto-char start)
+      (let ((min-indent most-positive-fixnum)
+            (end-line (line-number-at-pos end)))
+        (while (and (<= (line-number-at-pos) end-line)
+                    (not (eobp)))
+          (beginning-of-line)
+          (unless (my/tsx-line-empty-p)
+            (setq min-indent (min min-indent (current-indentation))))
+          (forward-line 1))
+        (if (= min-indent most-positive-fixnum) 0 min-indent))))
 
   (defun my/tsx-jsx-node-p (node)
-    )
+    "Check if NODE is a JSX-related node."
+    (when node
+      (let ((type (treesit-node-type node)))
+        (member type '("jsx_element" 
+                       "jsx_fragment"
+                       "jsx_self_closing_element"
+                       "jsx_opening_element"
+                       "jsx_closing_element"
+                       "jsx_expression"
+                       "jsx_attribute"
+                       "jsx_text")))))
 
-  (defun my/tsx-comment-region-function (beg end &optional _arg)
-    "This function single line comments/uncomments jsx in a tsx typescript file.
-This should work similar to how rjsx-mode handles it for javascript."
-    ;; TODO: store original comment function
-    ;; TODO: use tree-sitter to determine if this is a jsx node
-    ;; TODO: if it is a jsx node use this comment function, use the original one otherwise.
-    (let* ((node (treesit-node-at (point)))
-           (in-jsx () ;; TODO: is this a node inside jsx
+  (defun my/tsx-comment-jsx (start end arg)
+    "Comment region from START to END using JSX comments {/* */}."
+    (save-excursion
+      (let* ((start-line (line-number-at-pos start))
+             (end-line (line-number-at-pos end))
+             (min-indent (my/tsx-min-indentation start end)))
+        (goto-char start)
+        (beginning-of-line)
+        (dotimes (i (1+ (- end-line start-line)))
+          (unless (my/tsx-line-empty-p)
+            (if (my/tsx-line-jsx-commented-p)
+                (my/tsx-uncomment-jsx-line min-indent)
+              (my/tsx-comment-jsx-line min-indent)))
+          (forward-line 1)))))
 
-                   )
-           (use-jsx-comment () ;; TODO:
-                            ))
-      ;; TODO: This is ripped from rjsx mode. stuff is probably missing
-      (cond (use-jsx-comment
-             (let ((comment-start "{/*")
-                   (comment-end "*/}"))
-               (comment-normalize-vars)
-               (comment-region-default beg end arg)))
-            (in-jsx
-             (let ((comment-start "/*")
-                   (comment-end "*/"))
-               (comment-normalize-vars)
-               (if (rjsx-wrapped-expr-p node)
-                   (if (js2-empty-expr-node-p (rjsx-wrapped-expr-child node))
-                       (let ((comment-start "{/*")
-                             (comment-end "*/}"))
-                         (comment-normalize-vars)
-                         (comment-region-default beg end arg))
-                     (comment-region-default (1+ beg) (1- end) arg))
-                 (comment-region-default beg end arg))))
-            ;; TODO: comment-region-defualt comes from newcomment.el. check whether this uses the right function.
-            (t (comment-region-default beg end arg))))
-    )
+  (defun my/tsx-comment-ts (start end arg)
+    "Comment region from START to END using TypeScript comments //."
+    (save-excursion
+      (let* ((start-line (line-number-at-pos start))
+             (end-line (line-number-at-pos end))
+             (min-indent (my/tsx-min-indentation start end)))
+        (goto-char start)
+        (beginning-of-line)
+        (dotimes (i (1+ (- end-line start-line)))
+          (unless (my/tsx-line-empty-p)
+            (if (my/tsx-line-ts-commented-p)
+                (my/tsx-uncomment-ts-line min-indent)
+              (my/tsx-comment-ts-line min-indent)))
+          (forward-line 1)))))
+
+  (defun my/tsx-line-jsx-commented-p ()
+    "Check if current line has JSX comment."
+    (save-excursion
+      (beginning-of-line)
+      (skip-chars-forward " \t")
+      (looking-at "{?/\\*")))
+
+  (defun my/tsx-line-ts-commented-p ()
+    "Check if current line has TypeScript comment."
+    (save-excursion
+      (beginning-of-line)
+      (skip-chars-forward " \t")
+      (looking-at "//")))
+
+  (defun my/tsx-line-empty-p ()
+    "Check if current line is empty or whitespace only."
+    (save-excursion
+      (beginning-of-line)
+      (skip-chars-forward " \t")
+      (eolp)))
+
+  (defun my/tsx-comment-jsx-line (indent)
+    "Comment current line with JSX comment at INDENT level."
+    (save-excursion
+      (let ((original-indent (current-indentation)))
+        (beginning-of-line)
+        (skip-chars-forward " \t")
+        (let ((content (buffer-substring (point) (line-end-position))))
+          (beginning-of-line)
+          (delete-region (point) (line-end-position))
+          (indent-to indent)
+          (insert "{/* ")
+          (when (> original-indent indent)
+            (insert (make-string (- original-indent indent) ?\s)))
+          (insert content " */}")))))
+
+  (defun my/tsx-uncomment-jsx-line (indent)
+    "Uncomment current line with JSX comment and restore to original indentation."
+    (save-excursion
+      (beginning-of-line)
+      (skip-chars-forward " \t")
+      (when (looking-at "{?/\\* ?")
+        (let ((comment-indent (current-indentation)))
+          (re-search-forward "{?/\\* ?" (line-end-position) t)
+          (let* ((content-start (point))
+                 (extra-spaces 0))
+            ;; Count spaces after comment marker
+            (while (and (< (point) (line-end-position))
+                        (= (char-after) ?\s))
+              (setq extra-spaces (1+ extra-spaces))
+              (forward-char 1))
+            (let ((content-pos (point)))
+              (end-of-line)
+              (when (re-search-backward " ?\\*/}?[ \t]*$" content-start t)
+                (let ((content (buffer-substring content-pos (match-beginning 0))))
+                  (beginning-of-line)
+                  (delete-region (point) (line-end-position))
+                  (indent-to (+ comment-indent extra-spaces))
+                  (insert content)))))))))
+
+  (defun my/tsx-comment-ts-line (indent)
+    "Comment current line with TypeScript comment at INDENT level."
+    (save-excursion
+      (let ((original-indent (current-indentation)))
+        (beginning-of-line)
+        (skip-chars-forward " \t")
+        (let ((content (buffer-substring (point) (line-end-position))))
+          (beginning-of-line)
+          (delete-region (point) (line-end-position))
+          (indent-to indent)
+          (insert "// ")
+          (when (> original-indent indent)
+            (insert (make-string (- original-indent indent) ?\s)))
+          (insert content)))))
+
+  (defun my/tsx-uncomment-ts-line (indent)
+    "Uncomment current line with TypeScript comment and restore to original indentation."
+    (save-excursion
+      (beginning-of-line)
+      (skip-chars-forward " \t")
+      (when (looking-at "// ?")
+        (let ((comment-indent (current-indentation)))
+          (re-search-forward "// ?" (line-end-position) t)
+          (let ((extra-spaces 0))
+            ;; Count spaces after comment marker
+            (while (and (< (point) (line-end-position))
+                        (= (char-after) ?\s))
+              (setq extra-spaces (1+ extra-spaces))
+              (forward-char 1))
+            (let ((content (buffer-substring (point) (line-end-position))))
+              (beginning-of-line)
+              (delete-region (point) (line-end-position))
+              (indent-to (+ comment-indent extra-spaces))
+              (insert content)))))))
+
+  ;; Bind the function (example: use M-; which is typically bound to comment-dwim)
+  ;; Add this to your tsx-ts-mode-hook or similar:
+  ;; (local-set-key (kbd "M-;") 'my/tsx-comment-dwim)
+
+
+  ;; (defun my/tsx-comment-line (n)
+  ;;   "Comment with line-by-line behavior in JSX, normal behavior elsewhere."
+  ;;   (interactive "p")
+  ;;   (if (and (region-active-p) (my/tsx-in-jsx-context-p))
+  ;;       ;; JSX region - comment each line individually
+  ;;       (let ((beg (region-beginning))
+  ;;             (end (region-end)))
+  ;;         (save-excursion
+  ;;          (goto-char beg)
+  ;;          (while (<= (point) end)
+  ;;            (comment-line 1)
+  ;;            ;; (forward-line 1)
+  ;;            )))
+  ;;       ;; (comment-line (count-lines (region-beginning) (region-end)))
+  ;;     ;; Normal behavior for everything else
+  ;;     (comment-line n)))
+
+  ;; (defun my/tsx-in-jsx-context-p ()
+  ;;   "Check if current point is in JSX context using tree-sitter."
+  ;;   (when (treesit-parser-list)
+  ;;     (let ((node (treesit-node-at (point))))
+  ;;       (while (and node (not (member (treesit-node-type node)
+  ;;                                     '("jsx_element"
+  ;;                                       "jsx_self_closing_element"
+  ;;                                       "jsx_fragment"))))
+  ;;         (setq node (treesit-node-parent node)))
+  ;;       node)))
 
 
 ;;;; Erlang config
