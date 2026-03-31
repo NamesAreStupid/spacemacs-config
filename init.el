@@ -208,37 +208,6 @@ It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   ;; If non-nil then enable support for the portable dumper. You'll need to
-   ;; compile Emacs 27 from source following the instructions in file
-   ;; EXPERIMENTAL.org at to root of the git repository.
-   ;;
-   ;; WARNING: pdumper does not work with Native Compilation, so it's disabled
-   ;; regardless of the following setting when native compilation is in effect.
-   ;;
-   ;; (default nil)
-   dotspacemacs-enable-emacs-pdumper nil
-
-   ;; Name of executable file pointing to emacs 27+. This executable must be
-   ;; in your PATH.
-   ;; (default "emacs")
-   dotspacemacs-emacs-pdumper-executable-file "emacs"
-
-   ;; Name of the Spacemacs dump file. This is the file will be created by the
-   ;; portable dumper in the cache directory under dumps sub-directory.
-   ;; To load it when starting Emacs add the parameter `--dump-file'
-   ;; when invoking Emacs 27.1 executable on the command line, for instance:
-   ;;   ./emacs --dump-file=$HOME/.emacs.d/.cache/dumps/spacemacs-27.1.pdmp
-   ;; (default (format "spacemacs-%s.pdmp" emacs-version))
-   dotspacemacs-emacs-dumper-dump-file (format "spacemacs-%s.pdmp" emacs-version)
-
-   ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
-   ;; possible. Set it to nil if you have no way to use HTTPS in your
-   ;; environment, otherwise it is strongly recommended to let it set to t.
-   ;; This variable has no effect if Emacs is launched with the parameter
-   ;; `--insecure' which forces the value of this variable to nil.
-   ;; (default t)
-   dotspacemacs-elpa-https t
-
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    ;; (default 5)
    dotspacemacs-elpa-timeout 5
@@ -329,7 +298,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-startup-buffer-multi-digit-delay 0.4
 
    ;; If non-nil, show file icons for entries and headings on Spacemacs home buffer.
-   ;; This has no effect in terminal or if "all-the-icons" package or the font
+   ;; This has no effect in terminal or if "nerd-icons" package or the font
    ;; is not installed. (default nil)
    dotspacemacs-startup-buffer-show-icons nil
 
@@ -355,7 +324,10 @@ It should only modify the values of Spacemacs settings."
 
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
-   ;; with 2 themes variants, one dark and one light)
+   ;; with 2 themes variants, one dark and one light). A theme from external
+   ;; package can be defined with `:package', or a theme can be defined with
+   ;; `:location' to download the theme package, refer the themes section in
+   ;; DOCUMENTATION.org for the full theme specifications.
    dotspacemacs-themes '(gruvbox-dark-medium
                          spacemacs-dark
                          spacemacs-light)
@@ -383,6 +355,9 @@ It should only modify the values of Spacemacs settings."
                                :weight normal
                                :width normal)
 
+   ;; Default icons font, it can be `all-the-icons' or `nerd-icons'.
+   dotspacemacs-default-icons-font 'all-the-icons
+
    ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
 
@@ -402,10 +377,10 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-major-mode-leader-key ","
 
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
-   ;; (default "C-M-m" for terminal mode, "<M-return>" for GUI mode).
+   ;; (default "C-M-m" for terminal mode, "M-<return>" for GUI mode).
    ;; Thus M-RET should work as leader key in both GUI and terminal modes.
    ;; C-M-m also should work in terminal mode, but not in GUI mode.
-   dotspacemacs-major-mode-emacs-leader-key (if window-system "<M-return>" "C-M-m")
+   dotspacemacs-major-mode-emacs-leader-key (if window-system "M-<return>" "C-M-m")
 
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs `C-i', `TAB' and `C-m', `RET'.
@@ -469,6 +444,30 @@ It should only modify the values of Spacemacs settings."
    ;; displays the buffer in a same-purpose window even if the buffer can be
    ;; displayed in the current window. (default nil)
    dotspacemacs-switch-to-buffer-prefers-purpose nil
+
+   ;; Make consecutive tab key presses after commands such as
+   ;; `spacemacs/alternate-buffer' (SPC TAB) cycle through previous
+   ;; buffers/windows/etc. Please see the option's docstring for more information.
+   ;; Set the option to t in order to enable cycling for all current and
+   ;; future cycling commands. Alternatively, choose a subset of the currently
+   ;; supported commands: '(alternate-buffer alternate-window). (default nil)
+   dotspacemacs-enable-cycling nil
+
+   ;; Whether side windows (such as those created by treemacs or neotree)
+   ;; are kept or minimized by `spacemacs/toggle-maximize-window' (SPC w m).
+   ;; (default t)
+   dotspacemacs-maximize-window-keep-side-windows t
+
+   ;; If nil, no load-hints enabled. If t, enable the `load-hints' which will
+   ;; put the most likely path on the top of `load-path' to reduce walking
+   ;; through the whole `load-path'. It's an experimental feature to speedup
+   ;; Spacemacs on Windows. Refer the FAQ.org "load-hints" session for details.
+   dotspacemacs-enable-load-hints nil
+
+   ;; If t, enable the `package-quickstart' feature to avoid full package
+   ;; loading, otherwise no `package-quickstart' attemption (default nil).
+   ;; Refer the FAQ.org "package-quickstart" section for details.
+   dotspacemacs-enable-package-quickstart nil
 
    ;; If non-nil a progress bar is displayed when spacemacs is loading. This
    ;; may increase the boot time on some systems and emacs builds, set it to
@@ -587,9 +586,15 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-persistent-server nil
 
    ;; List of search tool executable names. Spacemacs uses the first installed
-   ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
-   ;; (default '("rg" "ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
+   ;; tool of the list. Supported tools are `rg', `ag', `ack' and `grep'.
+   ;; (default '("rg" "ag" "ack" "grep"))
+   dotspacemacs-search-tools '("rg" "ag" "ack" "grep")
+
+   ;; The backend used for undo/redo functionality. Possible values are
+   ;; `undo-redo', `undo-fu' and `undo-tree' see also `evil-undo-system'.
+   ;; Note that saved undo history does not get transferred when changing
+   ;; your undo system from or to undo-tree. (default `undo-redo')
+   dotspacemacs-undo-system 'undo-redo
 
    ;; Format specification for setting the frame title.
    ;; %a - the `abbreviated-file-name', or `buffer-name'
@@ -626,6 +631,9 @@ It should only modify the values of Spacemacs settings."
    ;; to aggressively delete empty line and long sequences of whitespace,
    ;; `trailing' to delete only the whitespace at end of lines, `changed' to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
+   ;; The variable `global-spacemacs-whitespace-cleanup-modes' controls
+   ;; which major modes have whitespace cleanup enabled or disabled
+   ;; by default.
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
 
@@ -673,7 +681,7 @@ See the header of this file for more information."
   ;; Currently I am not making use of it.
   ;; (spacemacs/load-spacemacs-env)
   (spacemacs/load-spacemacs-env)
-)
+  )
 
 (defun dotspacemacs/user-init ()
   "Initialization for user code:
@@ -710,7 +718,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included in the
 dump."
-)
+  )
 
 
 (defun dotspacemacs/user-config ()
@@ -1096,7 +1104,7 @@ Ignores empty lines."
     "Check if NODE is a JSX-related node."
     (when node
       (let ((type (treesit-node-type node)))
-        (member type '("jsx_element" 
+        (member type '("jsx_element"
                        "jsx_fragment"
                        "jsx_self_closing_element"
                        "jsx_opening_element"
@@ -1291,75 +1299,75 @@ Ignores empty lines."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(evil-want-Y-yank-to-eol nil)
- '(ignored-local-variable-values
-   '((web-mode-indent-style . 2) (web-mode-block-padding . 2)
-     (web-mode-script-padding . 2) (web-mode-style-padding . 2)))
- '(package-selected-packages
-   '(a ac-ispell ace-jump-helm-line ace-link ace-window adaptive-wrap
-       aggressive-indent alchemist alert anaconda-mode anaphora async
-       auto-compile auto-complete auto-highlight-symbol auto-yasnippet avy
-       bind-key bind-map cider cider-eval-sexp-fu clang-format
-       clean-aindent-mode clj-refactor clojure-mode clojure-snippets cmake-mode
-       coffee-mode column-enforce-mode common-lisp-snippets company
-       company-anaconda company-c-headers company-go company-quickhelp
-       company-statistics company-web cython-mode dash dash-functional deferred
-       define-word diff-hl diminish disaster docker docker-tramp dockerfile-mode
-       dumb-jump elisp-slime-nav elixir-mode emmet-mode epl erlang eval-sexp-fu
-       evil evil-args evil-ediff evil-escape evil-exchange evil-indent-plus
-       evil-matchit evil-mc evil-nerd-commenter evil-numbers evil-surround
-       evil-tutor evil-visual-mark-mode evil-visualstar exec-path-from-shell
-       expand-region eyebrowse f fancy-battery fill-column-indicator flx flx-ido
-       flycheck flycheck-credo flycheck-joker flycheck-pos-tip fringe-helper
-       fuzzy gh-md git-commit git-gutter git-gutter+ git-gutter-fringe
-       git-gutter-fringe+ git-link git-messenger git-timemachine
-       gitattributes-mode gitconfig-mode gitignore-mode gntp gnuplot go-eldoc
-       go-guru go-mode golden-ratio google-translate goto-chg haml-mode helm
-       helm-ag helm-c-yasnippet helm-company helm-core helm-css-scss
-       helm-descbinds helm-flx helm-gitignore helm-make helm-mode-manager
-       helm-pydoc helm-swoop helm-themes highlight highlight-indentation
-       highlight-parentheses hl-todo htmlize hungry-delete hydra iedit
-       indent-guide inflections js-doc js2-mode js2-refactor json-mode
-       json-reformat json-snatcher link-hint linum-relative live-py-mode
-       livid-mode log4e lorem-ipsum lv macrostep magit magit-gitflow magit-popup
-       markdown-mode markdown-toc mmm-mode move-text multiple-cursors neotree
-       ob-elixir open-junk-file org-bullets org-category-capture org-download
-       org-mime org-plus-contrib org-pomodoro org-present orgit packed paradox
-       paredit parent-mode parseclj parseedn pcre2el persp-mode pip-requirements
-       pkg-info polymode popup popwin pos-tip powerline powershell projectile
-       pug-mode py-isort pyenv-mode pytest pythonic pyvenv queue racket-mode
-       rainbow-delimiters request restart-emacs s sass-mode scss-mode seq sesman
-       simple-httpd skewer-mode slim-mode slime slime-company smartparens
-       smeargle spaceline spinner sql-indent tablist tagedit toc-org transient
-       undo-tree use-package uuidgen vi-tilde-fringe volatile-highlights
-       web-beautify web-completion-data web-mode websocket which-key winum
-       with-editor ws-butler yaml-mode yapfify yasnippet))
- '(safe-local-variable-values
-   '((js2-basic-offset . 2)
-     (helm-ctest-dir
-      . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build/")
-     (helm-make-arguments . "-j3") (helm-make-build-dir . "build")
-     (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug")
-     (cmake-ide-build-dir
-      . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build")
-     (cmake-ide-project-dir
-      . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris")
-     (typescript-backend . tide) (typescript-backend . lsp)
-     (javascript-backend . tide) (javascript-backend . tern)
-     (javascript-backend . lsp)))
- '(warning-suppress-types '((comp))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t))
-)
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(evil-want-Y-yank-to-eol nil)
+   '(ignored-local-variable-values
+     '((web-mode-indent-style . 2) (web-mode-block-padding . 2)
+       (web-mode-script-padding . 2) (web-mode-style-padding . 2)))
+   '(package-selected-packages
+     '(a ac-ispell ace-jump-helm-line ace-link ace-window adaptive-wrap
+         aggressive-indent alchemist alert anaconda-mode anaphora async
+         auto-compile auto-complete auto-highlight-symbol auto-yasnippet avy
+         bind-key bind-map cider cider-eval-sexp-fu clang-format
+         clean-aindent-mode clj-refactor clojure-mode clojure-snippets cmake-mode
+         coffee-mode column-enforce-mode common-lisp-snippets company
+         company-anaconda company-c-headers company-go company-quickhelp
+         company-statistics company-web cython-mode dash dash-functional deferred
+         define-word diff-hl diminish disaster docker docker-tramp dockerfile-mode
+         dumb-jump elisp-slime-nav elixir-mode emmet-mode epl erlang eval-sexp-fu
+         evil evil-args evil-ediff evil-escape evil-exchange evil-indent-plus
+         evil-matchit evil-mc evil-nerd-commenter evil-numbers evil-surround
+         evil-tutor evil-visual-mark-mode evil-visualstar exec-path-from-shell
+         expand-region eyebrowse f fancy-battery fill-column-indicator flx flx-ido
+         flycheck flycheck-credo flycheck-joker flycheck-pos-tip fringe-helper
+         fuzzy gh-md git-commit git-gutter git-gutter+ git-gutter-fringe
+         git-gutter-fringe+ git-link git-messenger git-timemachine
+         gitattributes-mode gitconfig-mode gitignore-mode gntp gnuplot go-eldoc
+         go-guru go-mode golden-ratio google-translate goto-chg haml-mode helm
+         helm-ag helm-c-yasnippet helm-company helm-core helm-css-scss
+         helm-descbinds helm-flx helm-gitignore helm-make helm-mode-manager
+         helm-pydoc helm-swoop helm-themes highlight highlight-indentation
+         highlight-parentheses hl-todo htmlize hungry-delete hydra iedit
+         indent-guide inflections js-doc js2-mode js2-refactor json-mode
+         json-reformat json-snatcher link-hint linum-relative live-py-mode
+         livid-mode log4e lorem-ipsum lv macrostep magit magit-gitflow magit-popup
+         markdown-mode markdown-toc mmm-mode move-text multiple-cursors neotree
+         ob-elixir open-junk-file org-bullets org-category-capture org-download
+         org-mime org-plus-contrib org-pomodoro org-present orgit packed paradox
+         paredit parent-mode parseclj parseedn pcre2el persp-mode pip-requirements
+         pkg-info polymode popup popwin pos-tip powerline powershell projectile
+         pug-mode py-isort pyenv-mode pytest pythonic pyvenv queue racket-mode
+         rainbow-delimiters request restart-emacs s sass-mode scss-mode seq sesman
+         simple-httpd skewer-mode slim-mode slime slime-company smartparens
+         smeargle spaceline spinner sql-indent tablist tagedit toc-org transient
+         undo-tree use-package uuidgen vi-tilde-fringe volatile-highlights
+         web-beautify web-completion-data web-mode websocket which-key winum
+         with-editor ws-butler yaml-mode yapfify yasnippet))
+   '(safe-local-variable-values
+     '((js2-basic-offset . 2)
+       (helm-ctest-dir
+        . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build/")
+       (helm-make-arguments . "-j3") (helm-make-build-dir . "build")
+       (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug")
+       (cmake-ide-build-dir
+        . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris/build")
+       (cmake-ide-project-dir
+        . "d:/Workspaces/c-cpp/raylib-playground/raylib-tetris")
+       (typescript-backend . tide) (typescript-backend . lsp)
+       (javascript-backend . tide) (javascript-backend . tern)
+       (javascript-backend . lsp)))
+   '(warning-suppress-types '((comp))))
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(highlight-parentheses-highlight ((nil (:weight ultra-bold))) t))
+  )
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
